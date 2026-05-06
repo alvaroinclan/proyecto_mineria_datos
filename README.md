@@ -22,7 +22,7 @@ Full documentation at **[alvaroinclan.github.io/proyecto_mineria_datos](https://
 ## Installation
 
   ```bash
-  git clone https://github.com/alvaroinclan/proyecto-meteorologia.git
+  git clone https://github.com/alvaroinclan/proyecto_mineria_datos.git
   cd proyecto-meteorologia
   pip install uv
   uv sync --group dev
@@ -49,7 +49,7 @@ Data is not included in the repository. To download:
 ## Project Structure
 
   ```
-  proyecto-meteorologia/
+  proyecto_mineria_datos/
   ├── .github/workflows/   # CI/CD pipelines
   ├── data/                # Data files (not committed — see .gitignore)
   ├── docs/                # MkDocs documentation sources
