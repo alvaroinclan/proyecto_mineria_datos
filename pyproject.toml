@@ -1,7 +1,7 @@
 [project]
 name = "proyecto_mineria_datos"
 version = "0.0.1"
-description = "Proyecto final — Minería de datos"
+description = "Ciclo de vida del dato — Minería de datos"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "Álvaro Inclán" }]

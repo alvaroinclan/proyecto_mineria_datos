@@ -1,0 +1,43 @@
+site_name: Ciclo de vida del dato 
+site_description: Proyecto final Minería de datos
+site_author: Álvaro Inclán
+repo_url: https://github.com/alvaroinclan/proyecto_mineria_datos
+repo_name: proyecto_mineria_datos
+
+theme:
+  name: material
+  language: es
+  palette:
+    - scheme: default
+      primary: blue
+      accent: cyan
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: cyan
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - navigation.indexes
+    - navigation.top
+
+nav:
+  - Home: index.md
+  - Gráficas: graficas.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
