@@ -1,6 +1,6 @@
-# Análisis de Datos Meteorológicos
+# Ciclo de vida del dato 
 
-> Proyecto final — Big Data · Grado en Matemáticas · UNIE Universidad
+> Proyecto final — Minería de datos · Grado en Matemáticas · UNIE Universidad
 
 [![CI](https://github.com/alvaroinclan/proyecto_mineria_datos/actions/workflows/ci.yml/badge.svg)](https://github.com/alvaroinclan/proyecto_mineria_datos/actions/workflows/ci.yml)
 [![Docs](https://github.com/alvaroinclan/proyecto_mineria_datos/actions/workflows/docs.yml/badge.svg)](https://alvaroinclan.github.io/proyecto_mineria_datos/)
@@ -13,7 +13,7 @@
 
 ## Description
 
-*(Replace with your line-of-work description.)*
+Este proyecto aborda la predicción y segmentación del riesgo de adicción al smartphone utilizando técnicas de Minería de Datos. A través del dataset *Smartphone Addiction Prediction Data* (7 500 registros), se lleva a cabo el ciclo de vida completo del dato: desde el preprocesamiento y la validación de la calidad, pasando por el modelado predictivo (Regresión Logística, SVM, Random Forest) y la segmentación no supervisada (Clustering Jerárquico), hasta la interpretación final del impacto de cada variable mediante análisis de residuos y permutation importance.
 
 ## Documentation
 
@@ -23,7 +23,7 @@ Full documentation at **[alvaroinclan.github.io/proyecto_mineria_datos](https://
 
   ```bash
   git clone https://github.com/alvaroinclan/proyecto_mineria_datos.git
-  cd proyecto-meteorologia
+  cd proyecto_mineria_datos
   pip install uv
   uv sync --group dev
   ```
