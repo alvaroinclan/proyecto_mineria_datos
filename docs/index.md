@@ -5,6 +5,18 @@
 **Dataset:** Smartphone Addiction Prediction Data  
 
 ---
+
+**Resumen del Pipeline del Proyecto**
+
+Este trabajo implementa el ciclo de vida completo del dato estructurado en cuatro fases principales:
+
+1. **Preprocesamiento (EDA y Feature Engineering):** Limpieza de valores nulos, estudio de distribuciones/colinealidades y reducción a las variables más relevantes mediante Stepwise Forward (AIC).
+2. **Modelización Supervisada:** Entrenamiento, evaluación cruzada y optimización de hiperparámetros (GridSearchCV) de tres algoritmos de distinta naturaleza (Regresión Logística, SVM RBF y Random Forest) para predecir el riesgo de adicción.
+3. **Aprendizaje No Supervisado:** Aplicación de Clustering Jerárquico Aglomerativo (Ward, k=6) para segmentar a los usuarios y perfilar 6 patrones de uso subyacentes.
+4. **Interpretación y Conclusiones:** Análisis profundo de los modelos mediante diagnóstico de residuos, estimación de Permutation Importance y Odds Ratios para determinar la influencia causal de cada variable.
+
+---
+
 ## 1. Preprocesamiento - Análisis Exploratorio de Datos (EDA)
 
 ## 1.1. Descripción y Contexto
