@@ -326,3 +326,223 @@ uv run pytest tests/ -v
 ```
 
 Todos los tests pasan correctamente y actúan como guardia de regresión para futuras fases del proyecto.
+
+---
+
+# II. Modelización Supervisada y Contraste
+
+## 15. Estrategia de modelización
+
+### 15.1 Objetivo
+
+Contrastar modelos de **tres naturalezas distintas** para predecir la adicción al smartphone (`addicted_label`), según los requisitos del enunciado:
+
+| Categoría | Modelo | Justificación |
+|-----------|--------|---------------|
+| **Baseline (lineal)** | Regresión Logística | Modelo interpretable que establece la referencia |
+| **Modelo flexible** | SVM con kernel RBF | Captura relaciones no lineales en el espacio de características |
+| **Ensemble (agregación)** | Random Forest | Método de bagging que reduce varianza y mejora robustez |
+
+### 15.2 Protocolo experimental
+
+- **División Train/Test:** 80/20 estratificado (semilla 42)
+- **Validación cruzada:** StratifiedKFold con 5 folds para ajuste de hiperparámetros
+- **Métrica de optimización:** AUC-ROC (robusta ante desbalance)
+- **Estandarización:** StandardScaler ajustado solo en train (evita data leakage)
+- **Métricas de evaluación:** Accuracy, Precision, Recall, F1-Score, AUC-ROC
+
+### 15.3 División de datos
+
+| Conjunto | Observaciones | % Positivos |
+|----------|---------------|-------------|
+| **Train** | 6 000 | 70.8% |
+| **Test** | 1 500 | 70.8% |
+
+La estratificación garantiza que ambos conjuntos mantienen la misma proporción del target.
+
+---
+
+## 16. Modelo 1: Regresión Logística (Baseline)
+
+### 16.1 Justificación
+
+La regresión logística es el baseline natural para clasificación binaria. Como modelo lineal generalizado (GLM), proporciona coeficientes interpretables y una referencia contra la que medir modelos más complejos.
+
+### 16.2 Ajuste de hiperparámetros
+
+| Hiperparámetro | Valores explorados | Mejor valor |
+|---------------|--------------------|-------------|
+| `C` (regularización) | 0.001, 0.01, 0.1, 1, 10, 100 | **0.1** |
+| `penalty` | L1, L2 | **L2** |
+| `solver` | saga | saga |
+| `class_weight` | None, balanced | **None** |
+
+El valor óptimo de `C = 0.1` indica que se beneficia de una regularización moderada, penalizando coeficientes excesivamente grandes.
+
+### 16.3 Coeficientes del modelo
+
+| Variable | Coeficiente (estandarizado) | Interpretación |
+|----------|----------------------------:|----------------|
+| `daily_screen_time_hours` | +2.794 | Mayor tiempo de pantalla -> mayor riesgo |
+| `social_media_hours` | +2.064 | Mayor uso de RRSS -> mayor riesgo |
+| `sleep_hours` | +0.108 | Efecto positivo débil pero significativo |
+| *(intercepto)* | +2.278 | Sesgo base hacia la clase positiva |
+
+### 16.4 Resultados
+
+| Métrica | Valor |
+|---------|-------|
+| **Accuracy** | 0.8927 |
+| **Precision** | 0.9122 |
+| **Recall** | 0.9388 |
+| **F1-Score** | 0.9253 |
+| **AUC-ROC** | 0.9544 |
+
+> [!NOTE]
+> El modelo logístico ya consigue un AUC-ROC de 0.954, lo que indica que las relaciones lineales capturan una gran parte de la estructura del problema.
+
+---
+
+## 17. Modelo 2: SVM con kernel RBF (Modelo Flexible)
+
+### 17.1 Justificación
+
+El SVM con kernel gaussiano (RBF) proyecta los datos a un espacio de alta dimensionalidad donde las clases pueden ser separadas por un hiperplano. Permite capturar **relaciones no lineales** sin asumir una forma funcional concreta.
+
+### 17.2 Ajuste de hiperparámetros
+
+| Hiperparámetro | Valores explorados | Mejor valor |
+|---------------|--------------------|-------------|
+| `C` (coste) | 0.1, 1, 10, 100 | **100** |
+| `gamma` (ancho del kernel) | scale, auto, 0.01, 0.1, 1 | **1** |
+| `class_weight` | None, balanced | **None** |
+
+Un valor alto de `C = 100` y `gamma = 1` indica que el modelo explota fronteras de decisión complejas y localizadas, adaptándose finamente a la estructura de los datos.
+
+### 17.3 Resultados
+
+| Métrica | Valor |
+|---------|-------|
+| **Accuracy** | 0.9307 |
+| **Precision** | 0.9553 |
+| **Recall** | 0.9463 |
+| **F1-Score** | 0.9508 |
+| **AUC-ROC** | 0.9850 |
+
+**Vectores soporte:** 834 (422 clase 0 + 412 clase 1), representando un 13.9% de los datos de entrenamiento.
+
+> [!TIP]
+> La mejora de +3.06 puntos en AUC-ROC respecto al baseline confirma la presencia de relaciones no lineales que la regresión logística no captura.
+
+---
+
+## 18. Modelo 3: Random Forest (Ensemble)
+
+### 18.1 Justificación
+
+Random Forest es un método de agregación (*bagging*) que combina múltiples árboles de decisión entrenados sobre submuestras aleatorias. Reduce la varianza sin aumentar significativamente el sesgo, y proporciona una medida natural de importancia de variables.
+
+### 18.2 Ajuste de hiperparámetros
+
+| Hiperparámetro | Valores explorados | Mejor valor |
+|---------------|--------------------|-------------|
+| `n_estimators` | 100, 200, 500 | **100** |
+| `max_depth` | 3, 5, 10, None | **None** |
+| `min_samples_split` | 2, 5, 10 | **2** |
+| `class_weight` | None, balanced | **None** |
+
+La profundidad ilimitada (`max_depth=None`) y `min_samples_split=2` indican que los árboles se desarrollan completamente. El modelo con solo 100 árboles ya converge.
+
+### 18.3 Importancia de variables (Gini)
+
+| Variable | Importancia | Interpretación |
+|----------|------------:|----------------|
+| `daily_screen_time_hours` | **0.556** | Variable dominante |
+| `social_media_hours` | **0.382** | Segunda en importancia |
+| `sleep_hours` | 0.062 | Contribución marginal |
+
+### 18.4 Resultados
+
+| Métrica | Valor |
+|---------|-------|
+| **Accuracy** | 0.9327 |
+| **Precision** | 0.9563 |
+| **Recall** | 0.9482 |
+| **F1-Score** | 0.9522 |
+| **AUC-ROC** | 0.9891 |
+
+![Importancia de variables Random Forest](img/18_importancia_rf.png)
+
+---
+
+## 19. Comparativa de modelos
+
+### 19.1 Tabla resumen de métricas en Test
+
+| Modelo | Accuracy | Precision | Recall | F1-Score | AUC-ROC |
+|--------|:--------:|:---------:|:------:|:--------:|:-------:|
+| Regresión Logística | 0.8927 | 0.9122 | 0.9388 | 0.9253 | 0.9544 |
+| SVM (RBF) | 0.9307 | 0.9553 | 0.9463 | 0.9508 | 0.9850 |
+| **Random Forest** | **0.9327** | **0.9563** | **0.9482** | **0.9522** | **0.9891** |
+
+![Comparativa de métricas](img/17_comparativa_metricas.png)
+
+### 19.2 Curvas ROC
+
+![Curvas ROC](img/15_curvas_roc.png)
+
+Las tres curvas muestran un excelente poder discriminante. Random Forest y SVM presentan curvas prácticamente superpuestas, ambas claramente superiores al baseline logístico.
+
+### 19.3 Matrices de confusión
+
+![Matrices de confusión](img/16_matrices_confusion.png)
+
+### 19.4 Distribución de probabilidades predichas
+
+![Distribución de probabilidades](img/21_distribucion_probabilidades.png)
+
+Los modelos flexibles (SVM y RF) producen distribuciones más separadas entre clases, lo que indica mayor confianza en las predicciones.
+
+---
+
+## 20. Análisis del compromiso sesgo-varianza
+
+### 20.1 Métricas de Train vs Validación (AUC-ROC)
+
+| Modelo | CV Train | CV Validación | Gap | Diagnóstico |
+|--------|:--------:|:-------------:|:---:|-------------|
+| Regresión Logística | 0.9529 | 0.9529 | **0.0000** | Buen ajuste |
+| SVM (RBF) | 0.9916 | 0.9868 | **0.0048** | Buen ajuste |
+| Random Forest | 1.0000 | 0.9900 | **0.0100** | Buen ajuste |
+
+![Sesgo-Varianza](img/20_sesgo_varianza.png)
+
+### 20.2 Learning curves
+
+![Learning Curves](img/19_learning_curves.png)
+
+**Interpretación:**
+
+- **Regresión Logística:** Las curvas de train y validación convergen rápidamente y se mantienen juntas. Gap nulo (0.000) confirma que el modelo está limitado por su **sesgo** (no puede capturar relaciones no lineales), no por varianza.
+- **SVM (RBF):** Gap mínimo (0.005). El modelo tiene suficiente flexibilidad para capturar la no linealidad sin sobreajustar. Buen equilibrio.
+- **Random Forest:** Gap de 0.010 con AUC train = 1.000, lo que indica que los árboles individuales memorizan el train, pero la agregación por bagging controla eficazmente la varianza. El rendimiento en validación (0.990) es el más alto.
+
+> [!IMPORTANT]
+> Ningún modelo presenta sobreajuste problemático. El gap máximo (Random Forest, 0.010) es muy pequeño, confirmando que la validación cruzada con 5 folds y el tamaño de la muestra (6 000 train) son adecuados para los tres modelos.
+
+---
+
+## 21. Conclusiones de la modelización
+
+### 21.1 Ranking de modelos
+
+1. **Random Forest** (AUC = 0.989) - Mejor rendimiento global con gap sesgo-varianza controlado.
+2. **SVM (RBF)** (AUC = 0.985) - Rendimiento muy similar al RF con mejor equilibrio sesgo-varianza.
+3. **Regresión Logística** (AUC = 0.954) - Baseline sólido pero limitado por su linealidad.
+
+### 21.2 Hallazgos clave
+
+- La **mejora del baseline a los modelos flexibles** (+3.5 puntos AUC) confirma la existencia de relaciones no lineales en los datos, aunque la mayor parte de la estructura es capturada linealmente.
+- Las dos variables más importantes (`daily_screen_time_hours` y `social_media_hours`) dominan las predicciones en todos los modelos, con `sleep_hours` aportando información complementaria marginal.
+- El desbalance de clases (70.8% / 29.2%) no requirió tratamiento especial (`class_weight=None` fue óptimo en los tres modelos), gracias a que el desbalance es moderado y los modelos discriminan bien.
+- Los tres modelos alcanzan alta precision y recall simultáneamente, con F1 > 0.92 en todos los casos.

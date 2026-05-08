@@ -20,7 +20,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
-from sklearn.preprocessing import StandardScaler
+
 
 warnings.filterwarnings("ignore")
 plt.rcParams.update({
