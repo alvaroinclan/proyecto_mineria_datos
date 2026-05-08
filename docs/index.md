@@ -5,7 +5,7 @@
 **Dataset:** Smartphone Addiction Prediction Data  
 
 ---
-# I. Preprocesamiento - Análisis Exploratorio de Datos (EDA)
+## 1. Preprocesamiento - Análisis Exploratorio de Datos (EDA)
 
 ## 1.1. Descripción y Contexto
 
@@ -336,7 +336,7 @@ uv run pytest tests/ -v
 
 ---
 
-# II. Modelización Supervisada y Contraste
+## 2. Modelización Supervisada y Contraste
 
 ## 2.1. Estrategia de modelización
 
@@ -556,7 +556,7 @@ Aspectos a destacar:
 
 ---
 
-# III. Aprendizaje No Supervisado
+## 3. Aprendizaje No Supervisado
 
 ## 3.1. Clustering Jerárquico Aglomerativo
 
@@ -686,7 +686,7 @@ La visualización muestra que los clusters se organizan como una partición del 
 
 ---
 
-# IV. Interpretación y Conclusiones
+## 4. Interpretación y Conclusiones
 
 ## 4.1. Diagnóstico del modelo lineal: Análisis de residuos
 

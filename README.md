@@ -13,7 +13,7 @@
 
 ## Description
 
-Este proyecto aborda la predicción y segmentación del riesgo de adicción al smartphone utilizando técnicas de Minería de Datos. A través del dataset *Smartphone Addiction Prediction Data* (7 500 registros), se lleva a cabo el ciclo de vida completo del dato: desde el preprocesamiento y la validación de la calidad, pasando por el modelado predictivo (Regresión Logística, SVM, Random Forest) y la segmentación no supervisada (Clustering Jerárquico), hasta la interpretación final del impacto de cada variable mediante análisis de residuos y permutation importance.
+Este proyecto aborda la predicción y segmentación del riesgo de adicción al smartphone utilizando técnicas de Minería de Datos. A través del dataset *Smartphone Addiction Prediction Data*, se lleva a cabo el ciclo de vida completo del dato: desde el preprocesamiento y la validación de la calidad, pasando por el modelado predictivo (Regresión Logística, SVM, Random Forest) y la segmentación no supervisada (Clustering Jerárquico), hasta la interpretación final del impacto de cada variable mediante análisis de residuos y permutation importance.
 
 ## Documentation
 
@@ -30,11 +30,7 @@ Full documentation at **[alvaroinclan.github.io/proyecto_mineria_datos](https://
 
 ## Data Download
 
-Data is not included in the repository. To download:
-
-  ```bash
-  # TODO: add your data download instructions
-  ```
+Data is not included in the repository. To download Kaggle
 
 ## Usage
 
