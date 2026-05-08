@@ -15,14 +15,12 @@
 import os
 import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-
+from scipy.cluster.hierarchy import dendrogram, fcluster, linkage
+from sklearn.metrics import silhouette_samples, silhouette_score
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import silhouette_score, silhouette_samples
-from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
-
 
 warnings.filterwarnings("ignore")
 plt.rcParams.update({
@@ -153,7 +151,7 @@ cluster_labels = cluster_labels - 1
 
 df["cluster"] = cluster_labels
 
-print(f"\n  Distribucion de clusters:")
+print("\n  Distribucion de clusters:")
 for c in sorted(df["cluster"].unique()):
     n = (df["cluster"] == c).sum()
     pct = n / len(df) * 100
@@ -311,7 +309,7 @@ plt.close()
 
 # Silhouette medio por cluster
 print(f"\n  Silhouette global: {sil_final:.4f}")
-print(f"  Silhouette por cluster:")
+print("  Silhouette por cluster:")
 for c in sorted(np.unique(cluster_labels)):
     c_sil_mean = sil_vals[cluster_labels == c].mean()
     print(f"    Cluster {c}: {c_sil_mean:.4f}")

@@ -21,33 +21,29 @@
 import os
 import warnings
 
-
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-
-
-
-from sklearn.model_selection import (
-    train_test_split,
-    StratifiedKFold,
-    GridSearchCV,
-    learning_curve,
-)
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
+    ConfusionMatrixDisplay,
     accuracy_score,
+    confusion_matrix,
+    f1_score,
     precision_score,
     recall_score,
-    f1_score,
     roc_auc_score,
     roc_curve,
-    confusion_matrix,
-    ConfusionMatrixDisplay,
 )
+from sklearn.model_selection import (
+    GridSearchCV,
+    StratifiedKFold,
+    learning_curve,
+    train_test_split,
+)
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 warnings.filterwarnings("ignore")
 # Parametros graficos
@@ -297,7 +293,7 @@ COLORS = {"Regresion Logistica": "#3498db",
            "SVM (RBF)": "#e74c3c",
            "Random Forest": "#2ecc71"}
 
-# Curvas ROC 
+# Curvas ROC
 fig, ax = plt.subplots(figsize=(8, 6))
 for name, res in models_results.items():
     fpr, tpr, _ = roc_curve(y_test, res["y_prob"])

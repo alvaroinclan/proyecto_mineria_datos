@@ -5,6 +5,7 @@ Tests para validar el tratamiento de valores faltantes.
 """
 
 import os
+
 import pandas as pd
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -14,18 +14,17 @@
 import os
 import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from scipy import stats
-
-from sklearn.model_selection import train_test_split, StratifiedKFold
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.inspection import permutation_importance
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import StratifiedKFold, train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
 
 warnings.filterwarnings("ignore")
 plt.rcParams.update({
@@ -120,13 +119,13 @@ pearson_residuals = (y_test - p_hat) / np.sqrt(p_hat * (1 - p_hat))
 # Valores ajustados (linear predictor)
 linear_pred = X_test_sm @ logit_model.params
 
-print(f"\n  Residuos de devianza:")
+print("\n  Residuos de devianza:")
 print(f"    Media:     {deviance_residuals.mean():.4f}")
 print(f"    Desv. tip: {deviance_residuals.std():.4f}")
 print(f"    Min:       {deviance_residuals.min():.4f}")
 print(f"    Max:       {deviance_residuals.max():.4f}")
 
-print(f"\n  Residuos de Pearson:")
+print("\n  Residuos de Pearson:")
 print(f"    Media:     {pearson_residuals.mean():.4f}")
 print(f"    Desv. tip: {pearson_residuals.std():.4f}")
 print(f"    Min:       {pearson_residuals.min():.4f}")
@@ -151,7 +150,7 @@ n_g = np.array([len(g) for g in groups])
 hl_stat = np.sum((hl_obs - hl_exp) ** 2 / (hl_exp * (1 - hl_exp / n_g) + 1e-10))
 hl_pval = 1 - stats.chi2.cdf(hl_stat, df=n_groups - 2)
 
-print(f"\n  Test de Hosmer-Lemeshow:")
+print("\n  Test de Hosmer-Lemeshow:")
 print(f"    Estadistico: {hl_stat:.4f}")
 print(f"    p-valor:     {hl_pval:.4f}")
 if hl_pval > 0.05:

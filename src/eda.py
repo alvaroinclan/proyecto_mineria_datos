@@ -12,14 +12,11 @@
 import os
 import warnings
 
-
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
-
-
 
 warnings.filterwarnings("ignore")
 # Definimos parámetros de los gráficos
@@ -31,13 +28,13 @@ plt.rcParams.update({
     "axes.labelsize": 10,
 })
 
-# Rutas 
+# Rutas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_PATH = os.path.join(BASE_DIR, "data", "data base.csv")
 IMG_DIR = os.path.join(BASE_DIR, "docs", "img")
 os.makedirs(IMG_DIR, exist_ok=True)
 
-# Carga de datos 
+# Carga de datos
 df = pd.read_csv(DATA_PATH)
 
 
@@ -70,14 +67,14 @@ print("1. VISIÓN GENERAL")
 
 print(f"  Filas:     {df.shape[0]:,}")
 print(f"  Columnas:  {df.shape[1]}")
-print(f"\n  Tipos de datos:")
+print("\n  Tipos de datos:")
 for dtype, count in df.dtypes.value_counts().items():
     print(f"    {dtype}: {count}")
 
-print(f"\n  Primeras 5 filas:")
+print("\n  Primeras 5 filas:")
 print(df.head())
 
-print(f"\n  Información de columnas:")
+print("\n  Información de columnas:")
 for col in df.columns:
     print(f"    {col:30s}  dtype={str(df[col].dtype):8s}  "
           f"no-null={df[col].notna().sum():6,}  "
@@ -161,7 +158,7 @@ plt.close()
 
 
 # Test de normalidad (Shapiro-Wilk sobre muestra)para ver si siguen una distribución normal.
-print(f"\n  Test de normalidad (Shapiro-Wilk, muestra n≤5000):")
+print("\n  Test de normalidad (Shapiro-Wilk, muestra n≤5000):")
 print(f"  {'Variable':30s} {'Estadístico':>12s} {'p-valor':>12s} {'Normal?':>10s}")
 
 for col in NUM_COLS:

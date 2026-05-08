@@ -13,12 +13,9 @@
 import os
 import warnings
 
-
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 from scipy import stats
-
-
 
 warnings.filterwarnings("ignore")
 plt.rcParams.update({
@@ -29,7 +26,7 @@ plt.rcParams.update({
     "axes.labelsize": 10,
 })
 
-# Rutas 
+# Rutas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_PATH = os.path.join(BASE_DIR, "data", "data base.csv")
 IMG_DIR = os.path.join(BASE_DIR, "docs", "img")
@@ -55,14 +52,14 @@ print("1. LOCALIZACIÓN DE LOS FALTANTES")
 
 print(f"\n  Registros con NaN en addiction_level: {n_nan:,} de {len(df):,} "
       f"({n_nan / len(df) * 100:.2f}%)")
-print(f"  Resto de variables: 0 valores faltantes.")
+print("  Resto de variables: 0 valores faltantes.")
 
 # Qué valor tiene addicted_label en las filas con NaN
-print(f"\n  addicted_label en filas con NaN:")
+print("\n  addicted_label en filas con NaN:")
 for val, cnt in df.loc[mask_nan, "addicted_label"].value_counts().items():
     print(f"    addicted_label = {val}: {cnt:,} ({cnt / n_nan * 100:.1f}%)")
 
-print(f"\n  addicted_label en filas SIN NaN:")
+print("\n  addicted_label en filas SIN NaN:")
 for val, cnt in df.loc[~mask_nan, "addicted_label"].value_counts().items():
     print(f"    addicted_label = {val}: {cnt:,} "
           f"({cnt / (~mask_nan).sum() * 100:.1f}%)")
@@ -79,7 +76,7 @@ print("2. DIAGNÓSTICO DEL MECANISMO DE PÉRDIDA (MCAR / MAR / MNAR)")
 # Test Chi2 de independencia: ver si ser NaN depende de addicted_label
 contingency = pd.crosstab(mask_nan, df["addicted_label"])
 chi2, p_chi2, dof, _ = stats.chi2_contingency(contingency)
-print(f"\n  Test Chi2 (NaN vs addicted_label):")
+print("\n  Test Chi2 (NaN vs addicted_label):")
 print(f"    chi2 = {chi2:.4f},  gl = {dof},  p = {p_chi2:.4e}")
 if p_chi2 < 0.05:
     print("Se rechaza H0: los NaN dependen del target - mecanismo MAR.")
@@ -92,7 +89,7 @@ num_cols = [
     "daily_screen_time_hours", "social_media_hours",
     "sleep_hours", "notifications_per_day",
 ]
-print(f"\n  Test t (Welch) - medias de filas con NaN vs sin NaN:")
+print("\n  Test t (Welch) - medias de filas con NaN vs sin NaN:")
 print(f"  {'Variable':30s} {'Media NaN':>10s} {'Media OK':>10s} "
       f"{'p-valor':>12s} {'Signif':>7s}")
 print("  " + "─" * 72)
@@ -140,7 +137,7 @@ mild_en_1 = ((df_ok["addiction_level"] == "Mild") &
              (df_ok["addicted_label"] == 1)).sum()
 modsev_en_0 = ((df_ok["addiction_level"].isin(["Moderate", "Severe"])) &
                (df_ok["addicted_label"] == 0)).sum()
-print(f"\n  Excepciones al determinismo:")
+print("\n  Excepciones al determinismo:")
 print(f"    Mild con label=1:            {mild_en_1}")
 print(f"    Moderate/Severe con label=0: {modsev_en_0}")
 

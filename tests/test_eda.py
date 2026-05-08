@@ -4,8 +4,9 @@ Tests para validar el EDA del dataset de adicción al smartphone.
 """
 
 import os
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 
 # Ruta al CSV
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

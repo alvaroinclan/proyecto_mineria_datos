@@ -15,12 +15,12 @@
 import os
 import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
-
+from matplotlib.patches import Patch
 
 warnings.filterwarnings("ignore")
 plt.rcParams.update({
@@ -202,7 +202,8 @@ ax.set_title("Importancia de variables seleccionadas (Stepwise Forward)")
 ax.axvline(x=0, color="gray", linestyle="--", alpha=0.5)
 
 # Leyenda manual
-from matplotlib.patches import Patch
+
+
 legend_elements = [Patch(facecolor="#2ecc71", label="p < 0.05"),
                    Patch(facecolor="#e74c3c", label="p >= 0.05")]
 ax.legend(handles=legend_elements, loc="lower right")
