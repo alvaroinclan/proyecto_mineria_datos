@@ -904,6 +904,15 @@
 <strong>Asignatura:</strong> Minería de Datos - Grado en Matemáticas<br />
 <strong>Dataset:</strong> Smartphone Addiction Prediction Data  </p>
 <hr />
+<p><strong>Resumen del Pipeline del Proyecto</strong></p>
+<p>Este trabajo implementa el ciclo de vida completo del dato estructurado en cuatro fases principales:</p>
+<ol>
+<li><strong>Preprocesamiento (EDA y Feature Engineering):</strong> Limpieza de valores nulos, estudio de distribuciones/colinealidades y reducción a las variables más relevantes mediante Stepwise Forward (AIC).</li>
+<li><strong>Modelización Supervisada:</strong> Entrenamiento, evaluación cruzada y optimización de hiperparámetros (GridSearchCV) de tres algoritmos de distinta naturaleza (Regresión Logística, SVM RBF y Random Forest) para predecir el riesgo de adicción.</li>
+<li><strong>Aprendizaje No Supervisado:</strong> Aplicación de Clustering Jerárquico Aglomerativo (Ward, k=6) para segmentar a los usuarios y perfilar 6 patrones de uso subyacentes.</li>
+<li><strong>Interpretación y Conclusiones:</strong> Análisis profundo de los modelos mediante diagnóstico de residuos, estimación de Permutation Importance y Odds Ratios para determinar la influencia causal de cada variable.</li>
+</ol>
+<hr />
 <h2 id="1-preprocesamiento-analisis-exploratorio-de-datos-eda">1. Preprocesamiento - Análisis Exploratorio de Datos (EDA)<a class="headerlink" href="#1-preprocesamiento-analisis-exploratorio-de-datos-eda" title="Permanent link">&para;</a></h2>
 <h2 id="11-descripcion-y-contexto">1.1. Descripción y Contexto<a class="headerlink" href="#11-descripcion-y-contexto" title="Permanent link">&para;</a></h2>
 <p><strong>Descripción del dataset</strong></p>
