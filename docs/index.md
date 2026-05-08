@@ -546,3 +546,134 @@ Los modelos flexibles (SVM y RF) producen distribuciones más separadas entre cl
 - Las dos variables más importantes (`daily_screen_time_hours` y `social_media_hours`) dominan las predicciones en todos los modelos, con `sleep_hours` aportando información complementaria marginal.
 - El desbalance de clases (70.8% / 29.2%) no requirió tratamiento especial (`class_weight=None` fue óptimo en los tres modelos), gracias a que el desbalance es moderado y los modelos discriminan bien.
 - Los tres modelos alcanzan alta precision y recall simultáneamente, con F1 > 0.92 en todos los casos.
+
+---
+
+# III. Aprendizaje No Supervisado
+
+## 22. Clustering Jerárquico Aglomerativo
+
+### 22.1 Objetivo
+
+Identificar **estructuras naturales** en los datos sin utilizar las etiquetas de adicción, analizar los perfiles de los clusters obtenidos e interpretar qué patrones de comportamiento subyacen en los datos.
+
+### 22.2 Metodología
+
+- **Algoritmo:** Clustering Jerárquico Aglomerativo
+- **Método de enlace:** Ward (minimiza la varianza intra-cluster)
+- **Métrica de distancia:** Euclídea
+- **Estandarización:** StandardScaler (necesario para que todas las variables contribuyan equitativamente)
+- **Selección de k:** Silhouette Score para k = 2, ..., 6
+
+### 22.3 Dendrogramas
+
+Se comparan tres métodos de enlace (Ward, Complete, Average) sobre una submuestra de 1 500 observaciones:
+
+![Dendrogramas](img/22_dendrogramas.png)
+
+El método **Ward** produce las fusiones más equilibradas y compactas. Los tres dendrogramas muestran una estructura jerárquica gradual, sin cortes naturales muy marcados.
+
+---
+
+## 23. Selección del número de clusters
+
+### 23.1 Silhouette Score por k
+
+| k | Silhouette Score |
+|:-:|:----------------:|
+| 2 | 0.1967 |
+| 3 | 0.2066 |
+| 4 | 0.1945 |
+| 5 | 0.1996 |
+| **6** | **0.2071** |
+
+![Silhouette por k](img/23_silhouette_por_k.png)
+
+### 23.2 Decisión
+
+Los valores de Silhouette son bajos (todos < 0.21), lo que indica que los datos no forman clusters bien separados, consistente con las distribuciones uniformes detectadas en el EDA. Se selecciona **k = 6** por ser el valor que maximiza el Silhouette Score (0.2071).
+
+---
+
+## 24. Perfilado de clusters
+
+### 24.1 Distribución
+
+| Cluster | Observaciones | Porcentaje |
+|:-------:|:-------------:|:----------:|
+| 0 | 778 | 10.4% |
+| 1 | 1 042 | 13.9% |
+| 2 | 1 880 | 25.1% |
+| 3 | 1 934 | 25.8% |
+| 4 | 773 | 10.3% |
+| 5 | 1 093 | 14.6% |
+
+Los clusters 2 y 3 son los más grandes (~25% cada uno), mientras que los clusters 0 y 4 son los más pequeños (~10%).
+
+### 24.2 Medias por cluster
+
+| Cluster | `daily_screen_time_hours` | `social_media_hours` | `sleep_hours` |
+|:-------:|:-------------------------:|:--------------------:|:-------------:|
+| 0 | 8.71 | **5.11** | 5.56 |
+| 1 | **4.59** | 2.80 | **5.48** |
+| 2 | 8.56 | **2.16** | 5.97 |
+| 3 | **10.00** | 3.68 | 7.70 |
+| 4 | **4.82** | **5.06** | 7.33 |
+| 5 | 5.06 | 2.35 | **7.97** |
+| *Global* | *7.50* | *3.27* | *6.74* |
+
+En negrita los valores notablemente por encima/debajo de la media global.
+
+![Perfiles de clusters](img/24_perfiles_clusters.png)
+
+### 24.3 Interpretación de los perfiles
+
+| Cluster | Perfil | Descripción |
+|:-------:|--------|-------------|
+| **0** | **Uso intensivo en RRSS, poco sueño** | Alto screen time (8.7 h), máximo uso de RRSS (5.1 h), poco sueño (5.6 h) |
+| **1** | **Bajo uso general, poco sueño** | Mínimo screen time (4.6 h), uso moderado de RRSS, mínimo sueño (5.5 h) |
+| **2** | **Pantalla alta sin RRSS, poco sueño** | Screen time alto (8.6 h) pero mínimo en RRSS (2.2 h), sueño bajo (6.0 h) |
+| **3** | **Uso máximo de pantalla, buen sueño** | Máximo screen time (10.0 h), RRSS moderadas, buen sueño (7.7 h) |
+| **4** | **Bajo screen time, alto RRSS, buen sueño** | Screen time bajo (4.8 h), RRSS alto (5.1 h), buen sueño (7.3 h) |
+| **5** | **Bajo uso general, máximo sueño** | Screen time bajo (5.1 h), RRSS bajo (2.4 h), máximo sueño (8.0 h) |
+
+![Boxplots por cluster](img/25_boxplots_clusters.png)
+
+---
+
+## 25. Análisis detallado y visualización
+
+### 25.1 Silhouette por cluster
+
+| Cluster | Silhouette medio | Calidad |
+|:-------:|:----------------:|---------|
+| 0 | 0.3231 | Moderada |
+| 1 | 0.2729 | Moderada |
+| 2 | 0.1247 | Baja |
+| 3 | 0.1126 | Baja |
+| 4 | 0.3494 | Moderada |
+| 5 | 0.2703 | Moderada |
+| **Global** | **0.2071** | **Baja** |
+
+Los clusters 0 y 4 (los más pequeños y diferenciados por alto uso de RRSS) tienen la mejor cohesión. Los clusters 2 y 3 (los más grandes) tienen peor separación, lo que indica mayor solapamiento.
+
+![Diagrama de Silueta](img/27_diagrama_silueta.png)
+
+### 25.2 Visualización 2D
+
+![Scatter clusters](img/26_scatter_clusters.png)
+
+La visualización muestra que los clusters se organizan como una partición del espacio tridimensional en regiones, con solapamiento parcial en las proyecciones 2D. La separación más clara se observa en el plano `daily_screen_time_hours` vs `sleep_hours`.
+
+---
+
+## 26. Conclusiones del aprendizaje no supervisado
+
+1. **Se identifican 6 perfiles de uso del smartphone** con el clustering jerárquico (Ward, k = 6). Aunque los Silhouette son bajos (0.21), los clusters revelan patrones interpretables.
+
+2. **Los clusters se diferencian por combinaciones de las tres variables**, no por una sola. El eje principal de separación es `daily_screen_time_hours` (4.6 - 10.0 h), seguido de `social_media_hours` (2.2 - 5.1 h) y `sleep_hours` (5.5 - 8.0 h).
+
+3. **Perfiles extremos:** El Cluster 3 (máximo uso, buen sueño) y el Cluster 5 (mínimo uso, máximo sueño) representan los dos extremos del espectro. El Cluster 0 (alto uso + alto RRSS + poco sueño) es el perfil de mayor riesgo potencial.
+
+4. **Limitación:** Los valores bajos de Silhouette reflejan la naturaleza uniforme y sintética del dataset, donde las fronteras entre grupos son graduales en lugar de abruptas. En datos reales, se esperaría una estructura de clusters más marcada.
+
