@@ -19,15 +19,15 @@ env/
 *.ipynb_checkpoints
 
 # Data files — never commit raw data
-data/*
-!data/.gitkeep
-*.csv
-*.parquet
-*.nc
-*.grib
-*.grib2
-*.h5
-*.hdf5
+# data/*
+# !data/.gitkeep
+# *.csv
+# *.parquet
+# *.nc
+# *.grib
+# *.grib2
+# *.h5
+# *.hdf5
 
 # Secrets & environment variables
 .env
