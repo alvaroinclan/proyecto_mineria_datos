@@ -42,6 +42,10 @@ Data is not included in the repository. To download Kaggle
   uv run mkdocs serve                    # preview docs at localhost:8000
   ```
 
+## Testing y Cobertura (Coverage)
+
+**Nota sobre Codecov (0%):** Los tests de este proyecto (`tests/`) actúan como pruebas de integración que validan el correcto resultado del pipeline (los datasets limpios y las gráficas en `docs/img/`), pero no importan directamente el código de la carpeta `src/`. Por este motivo, herramientas como `pytest-cov` o Codecov registran un 0% de cobertura, lo cual es el comportamiento esperado debido a la arquitectura orientada a scripts (pipeline) utilizada.
+
 ## Project Structure
 
   ```

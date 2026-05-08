@@ -1,6 +1,6 @@
 [project]
 name = "proyecto_mineria_datos"
-version = "0.1.7"
+version = "0.1.8"
 description = "Ciclo de vida del dato — Minería de datos"
 readme = "README.md"
 requires-python = ">=3.10"
