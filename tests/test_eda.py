@@ -15,17 +15,34 @@ IMG_DIR = os.path.join(BASE_DIR, "docs", "img")
 
 # Columnas esperadas según la descripción del dataset
 EXPECTED_COLUMNS = [
-    "transaction_id", "user_id", "age", "gender",
-    "daily_screen_time_hours", "social_media_hours", "gaming_hours",
-    "work_study_hours", "sleep_hours", "notifications_per_day",
-    "app_opens_per_day", "weekend_screen_time", "stress_level",
-    "academic_work_impact", "addiction_level", "addicted_label",
+    "transaction_id",
+    "user_id",
+    "age",
+    "gender",
+    "daily_screen_time_hours",
+    "social_media_hours",
+    "gaming_hours",
+    "work_study_hours",
+    "sleep_hours",
+    "notifications_per_day",
+    "app_opens_per_day",
+    "weekend_screen_time",
+    "stress_level",
+    "academic_work_impact",
+    "addiction_level",
+    "addicted_label",
 ]
 
 NUM_COLS = [
-    "age", "daily_screen_time_hours", "social_media_hours",
-    "gaming_hours", "work_study_hours", "sleep_hours",
-    "notifications_per_day", "app_opens_per_day", "weekend_screen_time",
+    "age",
+    "daily_screen_time_hours",
+    "social_media_hours",
+    "gaming_hours",
+    "work_study_hours",
+    "sleep_hours",
+    "notifications_per_day",
+    "app_opens_per_day",
+    "weekend_screen_time",
 ]
 
 
@@ -38,6 +55,7 @@ def _load_df():
 DF = _load_df()
 
 ## Usamos == como separador entre secciones para organizar el código que si no me lío
+
 
 # ============================================================================
 # 1. Tests de carga y estructura
@@ -78,7 +96,9 @@ class TestTiposDeDatos:
         assert DF["addicted_label"].dtype in (np.int64, np.int32)
 
     def test_gender_es_string(self):
-        assert DF["gender"].dtype == object or pd.api.types.is_string_dtype(DF["gender"])
+        assert DF["gender"].dtype == object or pd.api.types.is_string_dtype(
+            DF["gender"]
+        )
 
 
 # ============================================================================

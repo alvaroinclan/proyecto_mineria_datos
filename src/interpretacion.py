@@ -1,13 +1,13 @@
 """
 
-  interpretacion.py  -  Interpretacion y Conclusiones
-  Dataset: Smartphone Addiction Prediction Data
-  Trabajo Final - Mineria de Datos - Grado en Matematicas
+interpretacion.py  -  Interpretacion y Conclusiones
+Dataset: Smartphone Addiction Prediction Data
+Trabajo Final - Mineria de Datos - Grado en Matematicas
 
-  Realizamos:
-    1. Analisis de residuos para el modelo lineal (Regresion Logistica)
-    2. Importancia de variables en modelos de caja negra (SVM, Random Forest)
-    3. Analisis critico: limitaciones y sobreajuste
+Realizamos:
+  1. Analisis de residuos para el modelo lineal (Regresion Logistica)
+  2. Importancia de variables en modelos de caja negra (SVM, Random Forest)
+  3. Analisis critico: limitaciones y sobreajuste
 
 """
 
@@ -27,13 +27,15 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 warnings.filterwarnings("ignore")
-plt.rcParams.update({
-    "figure.dpi": 130,
-    "savefig.bbox": "tight",
-    "font.size": 10,
-    "axes.titlesize": 12,
-    "axes.labelsize": 10,
-})
+plt.rcParams.update(
+    {
+        "figure.dpi": 130,
+        "savefig.bbox": "tight",
+        "font.size": 10,
+        "axes.titlesize": 12,
+        "axes.labelsize": 10,
+    }
+)
 
 # Rutas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -68,8 +70,12 @@ cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
 # Regresion Logistica
 best_lr = LogisticRegression(
-    C=0.1, penalty="l2", solver="saga", class_weight=None,
-    max_iter=5000, random_state=42
+    C=0.1,
+    penalty="l2",
+    solver="saga",
+    class_weight=None,
+    max_iter=5000,
+    random_state=42,
 )
 best_lr.fit(X_train_sc, y_train)
 y_prob_lr = best_lr.predict_proba(X_test_sc)[:, 1]
@@ -77,16 +83,18 @@ print("  Regresion Logistica entrenada")
 
 # SVM
 best_svm = SVC(
-    C=100, gamma=1, kernel="rbf", class_weight=None,
-    probability=True, random_state=42
+    C=100, gamma=1, kernel="rbf", class_weight=None, probability=True, random_state=42
 )
 best_svm.fit(X_train_sc, y_train)
 print("  SVM entrenado")
 
 # Random Forest
 best_rf = RandomForestClassifier(
-    n_estimators=100, max_depth=None, min_samples_split=2,
-    class_weight=None, random_state=42
+    n_estimators=100,
+    max_depth=None,
+    min_samples_split=2,
+    class_weight=None,
+    random_state=42,
 )
 best_rf.fit(X_train, y_train)
 print("  Random Forest entrenado")
@@ -204,12 +212,23 @@ ax.grid(alpha=0.2)
 
 # 1.4 Histograma de residuos de devianza
 ax = axes[1, 1]
-ax.hist(deviance_residuals, bins=40, color="#3498db", alpha=0.7,
-        edgecolor="white", density=True)
+ax.hist(
+    deviance_residuals,
+    bins=40,
+    color="#3498db",
+    alpha=0.7,
+    edgecolor="white",
+    density=True,
+)
 # Curva normal de referencia
 x_norm = np.linspace(deviance_residuals.min(), deviance_residuals.max(), 100)
-ax.plot(x_norm, stats.norm.pdf(x_norm, deviance_residuals.mean(),
-        deviance_residuals.std()), "r-", linewidth=2, label="Normal ajustada")
+ax.plot(
+    x_norm,
+    stats.norm.pdf(x_norm, deviance_residuals.mean(), deviance_residuals.std()),
+    "r-",
+    linewidth=2,
+    label="Normal ajustada",
+)
 ax.set_xlabel("Residuos de devianza")
 ax.set_ylabel("Densidad")
 ax.set_title("Distribucion de Residuos de Devianza")
@@ -225,8 +244,12 @@ plt.close()
 fig, ax = plt.subplots(figsize=(8, 5))
 x_groups = np.arange(1, n_groups + 1)
 width = 0.35
-ax.bar(x_groups - width/2, hl_obs, width, label="Observados", color="#3498db", alpha=0.85)
-ax.bar(x_groups + width/2, hl_exp, width, label="Esperados", color="#e74c3c", alpha=0.85)
+ax.bar(
+    x_groups - width / 2, hl_obs, width, label="Observados", color="#3498db", alpha=0.85
+)
+ax.bar(
+    x_groups + width / 2, hl_exp, width, label="Esperados", color="#e74c3c", alpha=0.85
+)
 ax.set_xlabel("Decil de probabilidad")
 ax.set_ylabel("Numero de positivos")
 ax.set_title(f"Test de Hosmer-Lemeshow (Chi2={hl_stat:.2f}, p={hl_pval:.4f})")
@@ -261,14 +284,13 @@ models_for_pi = {
 perm_results = {}
 for name, (model, X_pi) in models_for_pi.items():
     result = permutation_importance(
-        model, X_pi, y_test, n_repeats=30,
-        random_state=42, scoring="roc_auc", n_jobs=-1
+        model, X_pi, y_test, n_repeats=30, random_state=42, scoring="roc_auc", n_jobs=-1
     )
     perm_results[name] = result
     print(f"\n  {name}:")
     for feat, mean, std in sorted(
         zip(FEATURES, result.importances_mean, result.importances_std),
-        key=lambda x: -x[1]
+        key=lambda x: -x[1],
     ):
         print(f"    {feat:30s}  {mean:.4f} (+/- {std:.4f})")
 
@@ -282,11 +304,25 @@ for i, (name, result) in enumerate(perm_results.items()):
     sorted_idx = np.argsort(result.importances_mean)[::-1]
     means = result.importances_mean
     stds = result.importances_std
-    bars = ax.bar(x + i * width, means, width, yerr=stds,
-                  label=name, color=colors[i], alpha=0.85, capsize=3)
+    bars = ax.bar(
+        x + i * width,
+        means,
+        width,
+        yerr=stds,
+        label=name,
+        color=colors[i],
+        alpha=0.85,
+        capsize=3,
+    )
     for bar, val in zip(bars, means):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.005,
-                f"{val:.3f}", ha="center", va="bottom", fontsize=7)
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.005,
+            f"{val:.3f}",
+            ha="center",
+            va="bottom",
+            fontsize=7,
+        )
 
 ax.set_xticks(x + width)
 ax.set_xticklabels(FEATURES, fontsize=9)
@@ -304,26 +340,37 @@ fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
 # Gini
 ax = axes[0]
 sorted_idx = np.argsort(gini_imp)
-ax.barh(np.array(FEATURES)[sorted_idx], gini_imp[sorted_idx],
-        color=["#2ecc71", "#3498db", "#e74c3c"][:len(FEATURES)])
+ax.barh(
+    np.array(FEATURES)[sorted_idx],
+    gini_imp[sorted_idx],
+    color=["#2ecc71", "#3498db", "#e74c3c"][: len(FEATURES)],
+)
 ax.set_xlabel("Importancia (Gini)")
 ax.set_title("Random Forest - Importancia Gini")
 for i, idx in enumerate(sorted_idx):
-    ax.text(gini_imp[idx] + 0.005, i, f"{gini_imp[idx]:.3f}",
-            va="center", fontsize=9)
+    ax.text(gini_imp[idx] + 0.005, i, f"{gini_imp[idx]:.3f}", va="center", fontsize=9)
 
 # Permutation
 ax = axes[1]
 pi_rf = perm_results["Random Forest"]
 sorted_idx = np.argsort(pi_rf.importances_mean)
-ax.barh(np.array(FEATURES)[sorted_idx], pi_rf.importances_mean[sorted_idx],
-        xerr=pi_rf.importances_std[sorted_idx],
-        color=["#2ecc71", "#3498db", "#e74c3c"][:len(FEATURES)], capsize=3)
+ax.barh(
+    np.array(FEATURES)[sorted_idx],
+    pi_rf.importances_mean[sorted_idx],
+    xerr=pi_rf.importances_std[sorted_idx],
+    color=["#2ecc71", "#3498db", "#e74c3c"][: len(FEATURES)],
+    capsize=3,
+)
 ax.set_xlabel("Permutation Importance (AUC-ROC)")
 ax.set_title("Random Forest - Permutation Importance")
 for i, idx in enumerate(sorted_idx):
-    ax.text(pi_rf.importances_mean[idx] + 0.005, i,
-            f"{pi_rf.importances_mean[idx]:.3f}", va="center", fontsize=9)
+    ax.text(
+        pi_rf.importances_mean[idx] + 0.005,
+        i,
+        f"{pi_rf.importances_mean[idx]:.3f}",
+        va="center",
+        fontsize=9,
+    )
 
 plt.suptitle("Importancia de Variables - Random Forest", fontsize=14, y=1.02)
 plt.tight_layout()
@@ -351,9 +398,14 @@ for feat, or_val, lo, hi in zip(FEATURES, odds_ratios, odds_ci_low, odds_ci_high
 fig, ax = plt.subplots(figsize=(8, 4))
 y_pos = np.arange(len(FEATURES))
 ax.barh(y_pos, odds_ratios, color="#3498db", alpha=0.85, height=0.5)
-ax.errorbar(odds_ratios, y_pos,
-            xerr=[odds_ratios - odds_ci_low, odds_ci_high - odds_ratios],
-            fmt="none", color="black", capsize=5)
+ax.errorbar(
+    odds_ratios,
+    y_pos,
+    xerr=[odds_ratios - odds_ci_low, odds_ci_high - odds_ratios],
+    fmt="none",
+    color="black",
+    capsize=5,
+)
 ax.axvline(x=1, color="red", linestyle="--", linewidth=1.5, label="OR = 1 (sin efecto)")
 ax.set_yticks(y_pos)
 ax.set_yticklabels(FEATURES)
@@ -368,5 +420,3 @@ for i, (or_val, lo, hi) in enumerate(zip(odds_ratios, odds_ci_low, odds_ci_high)
 plt.tight_layout()
 plt.savefig(os.path.join(IMG_DIR, "32_odds_ratios.png"))
 plt.close()
-
-

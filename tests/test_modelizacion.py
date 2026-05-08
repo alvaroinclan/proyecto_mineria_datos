@@ -53,12 +53,18 @@ class TestDataClean:
 
     def test_data_clean_filas(self):
         import pandas as pd
+
         df = pd.read_csv(os.path.join(BASE_DIR, "data", "data_clean.csv"))
         assert len(df) == 7500
 
     def test_data_clean_columnas(self):
         import pandas as pd
+
         df = pd.read_csv(os.path.join(BASE_DIR, "data", "data_clean.csv"))
-        expected = {"daily_screen_time_hours", "social_media_hours",
-                    "sleep_hours", "addicted_label"}
+        expected = {
+            "daily_screen_time_hours",
+            "social_media_hours",
+            "sleep_hours",
+            "addicted_label",
+        }
         assert set(df.columns) == expected

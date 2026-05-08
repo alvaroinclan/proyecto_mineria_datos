@@ -1,14 +1,14 @@
 """
 
- ingenieria_variables.py  -  Selección de Variables y Preparación
- Dataset: Smartphone Addiction Prediction Data
- Trabajo Final - Minería de Datos - Grado en Matemáticas
+ingenieria_variables.py  -  Selección de Variables y Preparación
+Dataset: Smartphone Addiction Prediction Data
+Trabajo Final - Minería de Datos - Grado en Matemáticas
 
- Realizamos:
-   1. Limpieza previa (eliminar IDs, leakage, colinealidad)
-   2. Codificación de variables categóricas
-   3. Selección de variables mediante Stepwise (forward) con AIC
-   4. Exportación del dataset final listo para modelización
+Realizamos:
+  1. Limpieza previa (eliminar IDs, leakage, colinealidad)
+  2. Codificación de variables categóricas
+  3. Selección de variables mediante Stepwise (forward) con AIC
+  4. Exportación del dataset final listo para modelización
 
 """
 
@@ -23,13 +23,15 @@ import statsmodels.api as sm
 from matplotlib.patches import Patch
 
 warnings.filterwarnings("ignore")
-plt.rcParams.update({
-    "figure.dpi": 130,
-    "savefig.bbox": "tight",
-    "font.size": 10,
-    "axes.titlesize": 12,
-    "axes.labelsize": 10,
-})
+plt.rcParams.update(
+    {
+        "figure.dpi": 130,
+        "savefig.bbox": "tight",
+        "font.size": 10,
+        "axes.titlesize": 12,
+        "axes.labelsize": 10,
+    }
+)
 
 # Rutas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -120,9 +122,7 @@ def stepwise_forward_aic(X, y):
     remaining = list(X.columns)
     selected = []
     # Modelo nulo (solo intercepto)
-    model_null = sm.Logit(y, sm.add_constant(pd.DataFrame(index=X.index))).fit(
-        disp=0
-    )
+    model_null = sm.Logit(y, sm.add_constant(pd.DataFrame(index=X.index))).fit(disp=0)
     current_aic = model_null.aic
     print(f"  Paso 0 (intercepto): AIC = {current_aic:.2f}")
 
@@ -194,9 +194,11 @@ pvals = model_final.pvalues.drop("const")
 colors = ["#2ecc71" if p < 0.05 else "#e74c3c" for p in pvals]
 
 coefs_sorted = coefs.abs().sort_values(ascending=True)
-bars = ax.barh(coefs_sorted.index, coefs_sorted.values,
-               color=[colors[list(coefs.index).index(v)]
-                      for v in coefs_sorted.index])
+bars = ax.barh(
+    coefs_sorted.index,
+    coefs_sorted.values,
+    color=[colors[list(coefs.index).index(v)] for v in coefs_sorted.index],
+)
 ax.set_xlabel("|Coeficiente| (Logit)")
 ax.set_title("Importancia de variables seleccionadas (Stepwise Forward)")
 ax.axvline(x=0, color="gray", linestyle="--", alpha=0.5)
@@ -204,8 +206,10 @@ ax.axvline(x=0, color="gray", linestyle="--", alpha=0.5)
 # Leyenda manual
 
 
-legend_elements = [Patch(facecolor="#2ecc71", label="p < 0.05"),
-                   Patch(facecolor="#e74c3c", label="p >= 0.05")]
+legend_elements = [
+    Patch(facecolor="#2ecc71", label="p < 0.05"),
+    Patch(facecolor="#e74c3c", label="p >= 0.05"),
+]
 ax.legend(handles=legend_elements, loc="lower right")
 plt.tight_layout()
 plt.savefig(os.path.join(IMG_DIR, "12_importancia_stepwise.png"))
@@ -237,8 +241,14 @@ ax.set_title("AIC Evolution - Stepwise Forward")
 ax.grid(axis="y", alpha=0.3)
 
 for i, (label, aic) in enumerate(aic_history):
-    ax.annotate(f"{aic:.0f}", (i, aic), textcoords="offset points",
-                xytext=(0, 10), ha="center", fontsize=8)
+    ax.annotate(
+        f"{aic:.0f}",
+        (i, aic),
+        textcoords="offset points",
+        xytext=(0, 10),
+        ha="center",
+        fontsize=8,
+    )
 
 plt.tight_layout()
 plt.savefig(os.path.join(IMG_DIR, "13_evolucion_aic.png"))
@@ -251,9 +261,20 @@ df_final_corr = X[selected_vars].copy()
 df_final_corr[TARGET] = y
 corr = df_final_corr.corr()
 mask = np.triu(np.ones_like(corr, dtype=bool))
-sns.heatmap(corr, mask=mask, annot=True, fmt=".2f", cmap="RdBu_r",
-            center=0, vmin=-1, vmax=1, square=True, linewidths=0.5,
-            cbar_kws={"shrink": 0.8}, ax=ax)
+sns.heatmap(
+    corr,
+    mask=mask,
+    annot=True,
+    fmt=".2f",
+    cmap="RdBu_r",
+    center=0,
+    vmin=-1,
+    vmax=1,
+    square=True,
+    linewidths=0.5,
+    cbar_kws={"shrink": 0.8},
+    ax=ax,
+)
 ax.set_title("Correlations -- Selected Variables")
 plt.tight_layout()
 plt.savefig(os.path.join(IMG_DIR, "14_correlaciones_final.png"))
@@ -266,4 +287,3 @@ plt.close()
 df_export = X[selected_vars].copy()
 df_export[TARGET] = y
 df_export.to_csv(CLEAN_PATH, index=False)
-

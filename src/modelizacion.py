@@ -1,20 +1,20 @@
 """
 
-  modelizacion.py  -  Modelizacion Supervisada y Contraste
-  Dataset: Smartphone Addiction Prediction Data
-  Trabajo Final - Mineria de Datos - Grado en Matematicas
+modelizacion.py  -  Modelizacion Supervisada y Contraste
+Dataset: Smartphone Addiction Prediction Data
+Trabajo Final - Mineria de Datos - Grado en Matematicas
 
-  Modelos implementados:
-    1. Regresion Logistica (Baseline - modelo lineal)
-    2. SVM con kernel RBF (Modelo flexible - relaciones no lineales)
-    3. Random Forest (Metodo de agregacion / Ensemble)
+Modelos implementados:
+  1. Regresion Logistica (Baseline - modelo lineal)
+  2. SVM con kernel RBF (Modelo flexible - relaciones no lineales)
+  3. Random Forest (Metodo de agregacion / Ensemble)
 
-  Metodologia:
-    - Train/Test split estratificado (80/20)
-    - Validacion Cruzada estratificada 5-fold para ajuste de hiperparametros
-    - Metricas: Accuracy, Precision, Recall, F1-Score, AUC-ROC
-    - Analisis del compromiso sesgo-varianza
-    - Comparativa final entre modelos
+Metodologia:
+  - Train/Test split estratificado (80/20)
+  - Validacion Cruzada estratificada 5-fold para ajuste de hiperparametros
+  - Metricas: Accuracy, Precision, Recall, F1-Score, AUC-ROC
+  - Analisis del compromiso sesgo-varianza
+  - Comparativa final entre modelos
 
 """
 
@@ -47,13 +47,15 @@ from sklearn.svm import SVC
 
 warnings.filterwarnings("ignore")
 # Parametros graficos
-plt.rcParams.update({
-    "figure.dpi": 130,
-    "savefig.bbox": "tight",
-    "font.size": 10,
-    "axes.titlesize": 12,
-    "axes.labelsize": 10,
-})
+plt.rcParams.update(
+    {
+        "figure.dpi": 130,
+        "savefig.bbox": "tight",
+        "font.size": 10,
+        "axes.titlesize": 12,
+        "axes.labelsize": 10,
+    }
+)
 
 # Rutas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -64,7 +66,7 @@ os.makedirs(IMG_DIR, exist_ok=True)
 # Carga de datos
 df = pd.read_csv(DATA_PATH)
 TARGET = "addicted_label"
-FEATURES = ["daily_screen_time_hours", "social_media_hours","sleep_hours"]
+FEATURES = ["daily_screen_time_hours", "social_media_hours", "sleep_hours"]
 
 X = df[FEATURES].values
 y = df[TARGET].values
@@ -117,7 +119,9 @@ gs_lr.fit(X_train_sc, y_train)
 
 best_lr = gs_lr.best_estimator_
 print(f"\n  Mejores hiperparametros: {gs_lr.best_params_}")
-print(f"  AUC-ROC CV (train): {gs_lr.cv_results_['mean_train_score'][gs_lr.best_index_]:.4f}")
+print(
+    f"  AUC-ROC CV (train): {gs_lr.cv_results_['mean_train_score'][gs_lr.best_index_]:.4f}"
+)
 print(f"  AUC-ROC CV (valid): {gs_lr.best_score_:.4f}")
 
 # Evaluacion en test
@@ -162,7 +166,9 @@ gs_svm.fit(X_train_sc, y_train)
 
 best_svm = gs_svm.best_estimator_
 print(f"\n  Mejores hiperparametros: {gs_svm.best_params_}")
-print(f"  AUC-ROC CV (train): {gs_svm.cv_results_['mean_train_score'][gs_svm.best_index_]:.4f}")
+print(
+    f"  AUC-ROC CV (train): {gs_svm.cv_results_['mean_train_score'][gs_svm.best_index_]:.4f}"
+)
 print(f"  AUC-ROC CV (valid): {gs_svm.best_score_:.4f}")
 
 # Evaluacion en test
@@ -206,7 +212,9 @@ gs_rf.fit(X_train, y_train)
 
 best_rf = gs_rf.best_estimator_
 print(f"\n  Mejores hiperparametros: {gs_rf.best_params_}")
-print(f"  AUC-ROC CV (train): {gs_rf.cv_results_['mean_train_score'][gs_rf.best_index_]:.4f}")
+print(
+    f"  AUC-ROC CV (train): {gs_rf.cv_results_['mean_train_score'][gs_rf.best_index_]:.4f}"
+)
 print(f"  AUC-ROC CV (valid): {gs_rf.best_score_:.4f}")
 
 # Evaluacion en test
@@ -235,19 +243,22 @@ print("5. COMPARATIVA FINAL DE MODELOS")
 
 models_results = {
     "Regresion Logistica": {
-        "y_pred": y_pred_lr, "y_prob": y_prob_lr,
+        "y_pred": y_pred_lr,
+        "y_prob": y_prob_lr,
         "best_params": gs_lr.best_params_,
         "cv_train_auc": gs_lr.cv_results_["mean_train_score"][gs_lr.best_index_],
         "cv_valid_auc": gs_lr.best_score_,
     },
     "SVM (RBF)": {
-        "y_pred": y_pred_svm, "y_prob": y_prob_svm,
+        "y_pred": y_pred_svm,
+        "y_prob": y_prob_svm,
         "best_params": gs_svm.best_params_,
         "cv_train_auc": gs_svm.cv_results_["mean_train_score"][gs_svm.best_index_],
         "cv_valid_auc": gs_svm.best_score_,
     },
     "Random Forest": {
-        "y_pred": y_pred_rf, "y_prob": y_prob_rf,
+        "y_pred": y_pred_rf,
+        "y_prob": y_prob_rf,
         "best_params": gs_rf.best_params_,
         "cv_train_auc": gs_rf.cv_results_["mean_train_score"][gs_rf.best_index_],
         "cv_valid_auc": gs_rf.best_score_,
@@ -268,7 +279,9 @@ for name, res in models_results.items():
 
 # Analisis sesgo-varianza
 print("\n  Analisis Sesgo-Varianza (AUC-ROC)")
-header2 = f"  {'Modelo':<25s} {'CV Train':>10s} {'CV Valid':>10s} {'Gap':>8s} {'Diagnostico'}"
+header2 = (
+    f"  {'Modelo':<25s} {'CV Train':>10s} {'CV Valid':>10s} {'Gap':>8s} {'Diagnostico'}"
+)
 print(header2)
 
 for name, res in models_results.items():
@@ -279,7 +292,9 @@ for name, res in models_results.items():
         diag = "Ligero sobreajuste"
     else:
         diag = "Sobreajuste"
-    print(f"  {name:<25s} {res['cv_train_auc']:>10.4f} {res['cv_valid_auc']:>10.4f} {gap:>8.4f}  {diag}")
+    print(
+        f"  {name:<25s} {res['cv_train_auc']:>10.4f} {res['cv_valid_auc']:>10.4f} {gap:>8.4f}  {diag}"
+    )
 
 
 # ============================================================================
@@ -289,17 +304,20 @@ print("\n")
 print("6. GRAFICOS")
 
 
-COLORS = {"Regresion Logistica": "#3498db",
-           "SVM (RBF)": "#e74c3c",
-           "Random Forest": "#2ecc71"}
+COLORS = {
+    "Regresion Logistica": "#3498db",
+    "SVM (RBF)": "#e74c3c",
+    "Random Forest": "#2ecc71",
+}
 
 # Curvas ROC
 fig, ax = plt.subplots(figsize=(8, 6))
 for name, res in models_results.items():
     fpr, tpr, _ = roc_curve(y_test, res["y_prob"])
     auc_val = roc_auc_score(y_test, res["y_prob"])
-    ax.plot(fpr, tpr, label=f"{name} (AUC={auc_val:.3f})",
-            color=COLORS[name], linewidth=2)
+    ax.plot(
+        fpr, tpr, label=f"{name} (AUC={auc_val:.3f})", color=COLORS[name], linewidth=2
+    )
 
 ax.plot([0, 1], [0, 1], "k--", alpha=0.4, label="Azar (AUC=0.500)")
 ax.set_xlabel("False Positive Rate (1 - Especificidad)")
@@ -341,10 +359,18 @@ x = np.arange(len(metrics_names))
 width = 0.25
 fig, ax = plt.subplots(figsize=(10, 5))
 for i, (name, vals) in enumerate(metrics_data.items()):
-    bars = ax.bar(x + i * width, vals, width, label=name, color=COLORS[name], alpha=0.85)
+    bars = ax.bar(
+        x + i * width, vals, width, label=name, color=COLORS[name], alpha=0.85
+    )
     for bar, val in zip(bars, vals):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.005,
-                f"{val:.3f}", ha="center", va="bottom", fontsize=7)
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.005,
+            f"{val:.3f}",
+            ha="center",
+            va="bottom",
+            fontsize=7,
+        )
 
 ax.set_xticks(x + width)
 ax.set_xticklabels(metrics_names)
@@ -361,13 +387,17 @@ plt.close()
 # Importancia de variables (Random Forest)
 fig, ax = plt.subplots(figsize=(8, 4))
 sorted_idx = np.argsort(importances)
-ax.barh(np.array(FEATURES)[sorted_idx], importances[sorted_idx],
-        color=["#2ecc71", "#3498db", "#e74c3c"][:len(FEATURES)])
+ax.barh(
+    np.array(FEATURES)[sorted_idx],
+    importances[sorted_idx],
+    color=["#2ecc71", "#3498db", "#e74c3c"][: len(FEATURES)],
+)
 ax.set_xlabel("Importancia (Gini)")
 ax.set_title("Importancia de Variables - Random Forest")
 for i, (idx) in enumerate(sorted_idx):
-    ax.text(importances[idx] + 0.005, i, f"{importances[idx]:.3f}",
-            va="center", fontsize=9)
+    ax.text(
+        importances[idx] + 0.005, i, f"{importances[idx]:.3f}", va="center", fontsize=9
+    )
 plt.tight_layout()
 plt.savefig(os.path.join(IMG_DIR, "18_importancia_rf.png"))
 plt.close()
@@ -376,8 +406,14 @@ plt.close()
 # Learning curves (sesgo-varianza)
 fig, axes = plt.subplots(1, 3, figsize=(16, 4.5))
 models_for_lc = [
-    ("Regresion Logistica", LogisticRegression(**gs_lr.best_params_, max_iter=5000, random_state=42)),
-    ("SVM (RBF)", SVC(**gs_svm.best_params_, kernel="rbf", probability=True, random_state=42)),
+    (
+        "Regresion Logistica",
+        LogisticRegression(**gs_lr.best_params_, max_iter=5000, random_state=42),
+    ),
+    (
+        "SVM (RBF)",
+        SVC(**gs_svm.best_params_, kernel="rbf", probability=True, random_state=42),
+    ),
     ("Random Forest", RandomForestClassifier(**gs_rf.best_params_, random_state=42)),
 ]
 
@@ -386,8 +422,13 @@ for ax, (name, model) in zip(axes, models_for_lc):
     X_lc = X_train_sc if name != "Random Forest" else X_train
 
     train_sizes, train_scores, val_scores = learning_curve(
-        model, X_lc, y_train, cv=cv, scoring="roc_auc",
-        train_sizes=np.linspace(0.1, 1.0, 10), n_jobs=-1
+        model,
+        X_lc,
+        y_train,
+        cv=cv,
+        scoring="roc_auc",
+        train_sizes=np.linspace(0.1, 1.0, 10),
+        n_jobs=-1,
     )
 
     train_mean = train_scores.mean(axis=1)
@@ -395,11 +436,19 @@ for ax, (name, model) in zip(axes, models_for_lc):
     val_mean = val_scores.mean(axis=1)
     val_std = val_scores.std(axis=1)
 
-    ax.fill_between(train_sizes, train_mean - train_std, train_mean + train_std,
-                    alpha=0.15, color=COLORS[name])
-    ax.fill_between(train_sizes, val_mean - val_std, val_mean + val_std,
-                    alpha=0.15, color="gray")
-    ax.plot(train_sizes, train_mean, "o-", color=COLORS[name], label="Train", markersize=4)
+    ax.fill_between(
+        train_sizes,
+        train_mean - train_std,
+        train_mean + train_std,
+        alpha=0.15,
+        color=COLORS[name],
+    )
+    ax.fill_between(
+        train_sizes, val_mean - val_std, val_mean + val_std, alpha=0.15, color="gray"
+    )
+    ax.plot(
+        train_sizes, train_mean, "o-", color=COLORS[name], label="Train", markersize=4
+    )
     ax.plot(train_sizes, val_mean, "o-", color="gray", label="Validacion", markersize=4)
     ax.set_title(name)
     ax.set_xlabel("Tamano de entrenamiento")
@@ -422,15 +471,36 @@ cv_valid = [models_results[n]["cv_valid_auc"] for n in names_list]
 
 x = np.arange(len(names_list))
 width = 0.35
-bars1 = ax.bar(x - width/2, cv_train, width, label="CV Train (AUC)", color="#3498db", alpha=0.8)
-bars2 = ax.bar(x + width/2, cv_valid, width, label="CV Validation (AUC)", color="#e67e22", alpha=0.8)
+bars1 = ax.bar(
+    x - width / 2, cv_train, width, label="CV Train (AUC)", color="#3498db", alpha=0.8
+)
+bars2 = ax.bar(
+    x + width / 2,
+    cv_valid,
+    width,
+    label="CV Validation (AUC)",
+    color="#e67e22",
+    alpha=0.8,
+)
 
 for bar in bars1:
-    ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.003,
-            f"{bar.get_height():.4f}", ha="center", va="bottom", fontsize=8)
+    ax.text(
+        bar.get_x() + bar.get_width() / 2,
+        bar.get_height() + 0.003,
+        f"{bar.get_height():.4f}",
+        ha="center",
+        va="bottom",
+        fontsize=8,
+    )
 for bar in bars2:
-    ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.003,
-            f"{bar.get_height():.4f}", ha="center", va="bottom", fontsize=8)
+    ax.text(
+        bar.get_x() + bar.get_width() / 2,
+        bar.get_height() + 0.003,
+        f"{bar.get_height():.4f}",
+        ha="center",
+        va="bottom",
+        fontsize=8,
+    )
 
 ax.set_xticks(x)
 ax.set_xticklabels(names_list)
@@ -444,14 +514,18 @@ plt.savefig(os.path.join(IMG_DIR, "20_sesgo_varianza.png"))
 plt.close()
 
 
-
 # Distribucion de probabilidades predichas
 fig, axes = plt.subplots(1, 3, figsize=(15, 4.5))
 for ax, (name, res) in zip(axes, models_results.items()):
     for label, label_name in [(0, "No adicto"), (1, "Adicto")]:
         mask = y_test == label
-        ax.hist(res["y_prob"][mask], bins=30, alpha=0.6, label=label_name,
-                color="#3498db" if label == 0 else "#e74c3c")
+        ax.hist(
+            res["y_prob"][mask],
+            bins=30,
+            alpha=0.6,
+            label=label_name,
+            color="#3498db" if label == 0 else "#e74c3c",
+        )
     ax.set_xlabel("Probabilidad predicha (clase 1)")
     ax.set_ylabel("Frecuencia")
     ax.set_title(name)
@@ -461,6 +535,3 @@ plt.suptitle("Distribucion de Probabilidades Predichas", fontsize=14, y=1.02)
 plt.tight_layout()
 plt.savefig(os.path.join(IMG_DIR, "21_distribucion_probabilidades.png"))
 plt.close()
-
-
-

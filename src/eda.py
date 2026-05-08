@@ -1,11 +1,11 @@
 """
 
- eda.py  -  Análisis Exploratorio de Datos (EDA)
- Dataset: Smartphone Addiction Prediction Data  (data base.csv)
- Trabajo Final - Minería de Datos - Grado en Matemáticas
+eda.py  -  Análisis Exploratorio de Datos (EDA)
+Dataset: Smartphone Addiction Prediction Data  (data base.csv)
+Trabajo Final - Minería de Datos - Grado en Matemáticas
 
- Generamos gráficos en  docs/img/  y un output por consola
- que se usará para redactar el informe en  docs/index.md.
+Generamos gráficos en  docs/img/  y un output por consola
+que se usará para redactar el informe en  docs/index.md.
 
 """
 
@@ -20,13 +20,15 @@ from scipy import stats
 
 warnings.filterwarnings("ignore")
 # Definimos parámetros de los gráficos
-plt.rcParams.update({
-    "figure.dpi": 130,
-    "savefig.bbox": "tight",
-    "font.size": 10,
-    "axes.titlesize": 12,
-    "axes.labelsize": 10,
-})
+plt.rcParams.update(
+    {
+        "figure.dpi": 130,
+        "savefig.bbox": "tight",
+        "font.size": 10,
+        "axes.titlesize": 12,
+        "axes.labelsize": 10,
+    }
+)
 
 # Rutas
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,16 +40,18 @@ os.makedirs(IMG_DIR, exist_ok=True)
 df = pd.read_csv(DATA_PATH)
 
 
-
-
-
 # Clasificación de variables para luego utilizar en el código
 ID_COLS = ["transaction_id", "user_id"]
 
 NUM_COLS = [
-    "age", "daily_screen_time_hours", "social_media_hours",
-    "gaming_hours", "work_study_hours", "sleep_hours",
-    "notifications_per_day", "app_opens_per_day",
+    "age",
+    "daily_screen_time_hours",
+    "social_media_hours",
+    "gaming_hours",
+    "work_study_hours",
+    "sleep_hours",
+    "notifications_per_day",
+    "app_opens_per_day",
     "weekend_screen_time",
 ]
 
@@ -76,9 +80,11 @@ print(df.head())
 
 print("\n  Información de columnas:")
 for col in df.columns:
-    print(f"    {col:30s}  dtype={str(df[col].dtype):8s}  "
-          f"no-null={df[col].notna().sum():6,}  "
-          f"unique={df[col].nunique():6,}")
+    print(
+        f"    {col:30s}  dtype={str(df[col].dtype):8s}  "
+        f"no-null={df[col].notna().sum():6,}  "
+        f"unique={df[col].nunique():6,}"
+    )
 
 # ============================================================================
 # 2. ANÁLISIS DE VALORES FALTANTES
@@ -98,15 +104,23 @@ else:
     null_df_show = null_df[null_df["Faltantes"] > 0]
     print(null_df_show.to_string())
 
-print(f"\n  Total de celdas faltantes: {null_counts.sum():,} "
-      f"({null_counts.sum() / df.size * 100:.2f}% del total)")
+print(
+    f"\n  Total de celdas faltantes: {null_counts.sum():,} "
+    f"({null_counts.sum() / df.size * 100:.2f}% del total)"
+)
 
 # Gráfico de mapa de faltantes
 fig, ax = plt.subplots(figsize=(12, 5))
 null_matrix = df.isnull().astype(int)
 sample_idx = np.sort(np.random.choice(len(df), size=min(500, len(df)), replace=False))
-sns.heatmap(null_matrix.iloc[sample_idx].T, cbar=False, cmap="YlOrRd",
-            yticklabels=df.columns, xticklabels=False, ax=ax)
+sns.heatmap(
+    null_matrix.iloc[sample_idx].T,
+    cbar=False,
+    cmap="YlOrRd",
+    yticklabels=df.columns,
+    xticklabels=False,
+    ax=ax,
+)
 ax.set_title("Mapa de valores faltantes (muestra de 500 filas)")
 ax.set_xlabel("Observaciones")
 ax.set_ylabel("Variables")
@@ -117,11 +131,11 @@ plt.close()
 # ============================================================================
 # 3. ESTADÍSTICOS DESCRIPTIVOS - VARIABLES NUMÉRICAS
 # ============================================================================
-print("\n" )
+print("\n")
 print("3. ESTADÍSTICOS DESCRIPTIVOS - VARIABLES NUMÉRICAS")
 
 
-desc = df[NUM_COLS].describe().T # Transponemos para que se vea bien la tabla
+desc = df[NUM_COLS].describe().T  # Transponemos para que se vea bien la tabla
 desc["skew"] = df[NUM_COLS].skew()
 desc["kurtosis"] = df[NUM_COLS].kurtosis()
 print(desc.round(3).to_string())
@@ -129,7 +143,7 @@ print(desc.round(3).to_string())
 # ============================================================================
 # 4. DISTRIBUCIONES – VARIABLES NUMÉRICAS
 # ============================================================================
-print("\n" )
+print("\n")
 print("4. DISTRIBUCIONES - VARIABLES NUMÉRICAS")
 
 
@@ -139,16 +153,19 @@ for i, col in enumerate(NUM_COLS):
     s = df[col].dropna()
     # Histograma
     axes[i, 0].hist(s, bins=40, color="#3498db", edgecolor="white", alpha=0.85)
-    axes[i, 0].axvline(s.mean(), color="#e74c3c", ls="--",
-                        label=f"Media={s.mean():.2f}")
-    axes[i, 0].axvline(s.median(), color="#2ecc71", ls="-",
-                        label=f"Mediana={s.median():.2f}")
+    axes[i, 0].axvline(
+        s.mean(), color="#e74c3c", ls="--", label=f"Media={s.mean():.2f}"
+    )
+    axes[i, 0].axvline(
+        s.median(), color="#2ecc71", ls="-", label=f"Mediana={s.median():.2f}"
+    )
     axes[i, 0].legend(fontsize=8)
     axes[i, 0].set_title(f"Histograma: {col}")
     axes[i, 0].set_ylabel("Frecuencia")
     # Boxplot
-    axes[i, 1].boxplot(s, vert=False, patch_artist=True,
-                        boxprops=dict(facecolor="#3498db", alpha=0.6))
+    axes[i, 1].boxplot(
+        s, vert=False, patch_artist=True, boxprops=dict(facecolor="#3498db", alpha=0.6)
+    )
     axes[i, 1].set_title(f"Boxplot: {col}")
 
 plt.suptitle("Distribuciones - Variables Numéricas", fontsize=14, y=1.01)
@@ -173,7 +190,7 @@ for col in NUM_COLS:
 # ============================================================================
 # 5. DISTRIBUCIONES - VARIABLES CATEGÓRICAS
 # ============================================================================
-print("\n" )
+print("\n")
 print("5. DISTRIBUCIONES - VARIABLES CATEGÓRICAS")
 
 
@@ -194,7 +211,7 @@ for i, col in enumerate(ALL_CAT):
     if i >= len(axes):
         break
     vc = df[col].value_counts()
-    axes[i].barh(vc.index[::-1], vc.values[::-1], color=palette[:len(vc)])
+    axes[i].barh(vc.index[::-1], vc.values[::-1], color=palette[: len(vc)])
     axes[i].set_title(f"Distribución: {col}")
     axes[i].set_xlabel("Frecuencia")
 
@@ -211,7 +228,7 @@ plt.close()
 # ============================================================================
 # 6. ANÁLISIS DE CORRELACIONES
 # ============================================================================
-print("\n" )
+print("\n")
 print("6. ANÁLISIS DE CORRELACIONES")
 
 
@@ -231,14 +248,36 @@ print(corr_spearman.round(3).to_string())
 fig, axes = plt.subplots(1, 2, figsize=(18, 8))
 mask = np.triu(np.ones_like(corr_pearson, dtype=bool))
 
-sns.heatmap(corr_pearson, mask=mask, annot=True, fmt=".2f", cmap="RdBu_r",
-            center=0, vmin=-1, vmax=1, ax=axes[0], square=True,
-            linewidths=0.5, cbar_kws={"shrink": 0.8})
+sns.heatmap(
+    corr_pearson,
+    mask=mask,
+    annot=True,
+    fmt=".2f",
+    cmap="RdBu_r",
+    center=0,
+    vmin=-1,
+    vmax=1,
+    ax=axes[0],
+    square=True,
+    linewidths=0.5,
+    cbar_kws={"shrink": 0.8},
+)
 axes[0].set_title("Correlación de Pearson")
 
-sns.heatmap(corr_spearman, mask=mask, annot=True, fmt=".2f", cmap="RdBu_r",
-            center=0, vmin=-1, vmax=1, ax=axes[1], square=True,
-            linewidths=0.5, cbar_kws={"shrink": 0.8})
+sns.heatmap(
+    corr_spearman,
+    mask=mask,
+    annot=True,
+    fmt=".2f",
+    cmap="RdBu_r",
+    center=0,
+    vmin=-1,
+    vmax=1,
+    ax=axes[1],
+    square=True,
+    linewidths=0.5,
+    cbar_kws={"shrink": 0.8},
+)
 axes[1].set_title("Correlación de Spearman")
 
 plt.suptitle("Matrices de Correlación", fontsize=14)
@@ -266,11 +305,13 @@ else:
 
 # Correlaciones con la variable objetivo
 print(f"\n  Correlaciones con {TARGET_COL} (Pearson):")
-target_corr = corr_pearson[TARGET_COL].drop(TARGET_COL).sort_values(
-    key=abs, ascending=False
+target_corr = (
+    corr_pearson[TARGET_COL].drop(TARGET_COL).sort_values(key=abs, ascending=False)
 )
 for var, r in target_corr.items():
-    marker = "***" if abs(r) > 0.5 else "**" if abs(r) > 0.3 else "*" if abs(r) > 0.1 else ""
+    marker = (
+        "***" if abs(r) > 0.5 else "**" if abs(r) > 0.3 else "*" if abs(r) > 0.1 else ""
+    )
     print(f"    {var:30s}: r = {r:+.4f}  {marker}")
 
 # 6c. Scatter plots de las relaciones más relevantes con la variable objetivo
@@ -282,15 +323,21 @@ for i, var in enumerate(top_corr_vars):
     sy = df[TARGET_COL].dropna()
     common = sx.index.intersection(sy.index)
     sample_idx = np.random.choice(common, size=min(3000, len(common)), replace=False)
-    axes[i].scatter(df.loc[sample_idx, var], df.loc[sample_idx, TARGET_COL],
-                    alpha=0.2, s=8, color="#3498db")
+    axes[i].scatter(
+        df.loc[sample_idx, var],
+        df.loc[sample_idx, TARGET_COL],
+        alpha=0.2,
+        s=8,
+        color="#3498db",
+    )
     r_val = df.loc[common, [var, TARGET_COL]].corr().iloc[0, 1]
     axes[i].set_xlabel(var)
     axes[i].set_ylabel(TARGET_COL)
     axes[i].set_title(f"{var} vs {TARGET_COL}  (r={r_val:.3f})")
 
-plt.suptitle("Diagramas de Dispersión - Top correlaciones con addicted_label",
-             fontsize=14)
+plt.suptitle(
+    "Diagramas de Dispersión - Top correlaciones con addicted_label", fontsize=14
+)
 plt.tight_layout()
 plt.savefig(os.path.join(IMG_DIR, "05_scatter_target.png"))
 plt.close()
@@ -303,8 +350,10 @@ print("\n")
 print("7. DETECCIÓN PRELIMINAR DE OUTLIERS (método IQR)")
 
 
-print(f"\n  {'Variable':30s} {'Q1':>10s} {'Q3':>10s} {'IQR':>10s} "
-      f"{'Lím.Inf':>10s} {'Lím.Sup':>10s} {'Outliers':>10s} {'%':>8s}")
+print(
+    f"\n  {'Variable':30s} {'Q1':>10s} {'Q3':>10s} {'IQR':>10s} "
+    f"{'Lím.Inf':>10s} {'Lím.Sup':>10s} {'Outliers':>10s} {'%':>8s}"
+)
 
 
 outlier_counts = {}
@@ -320,8 +369,10 @@ for col in NUM_COLS:
     n_outliers = ((s < lower) | (s > upper)).sum()
     pct = n_outliers / len(s) * 100
     outlier_counts[col] = n_outliers
-    print(f"  {col:30s} {q1:10.2f} {q3:10.2f} {iqr:10.2f} "
-          f"{lower:10.2f} {upper:10.2f} {n_outliers:10,} {pct:7.2f}%")
+    print(
+        f"  {col:30s} {q1:10.2f} {q3:10.2f} {iqr:10.2f} "
+        f"{lower:10.2f} {upper:10.2f} {n_outliers:10,} {pct:7.2f}%"
+    )
 
 # Boxplots comparativos para outliers
 fig, axes = plt.subplots(3, 3, figsize=(18, 14))
@@ -330,8 +381,9 @@ for i, col in enumerate(NUM_COLS):
     if i >= len(axes):
         break
     s = df[col].dropna()
-    bp = axes[i].boxplot(s, vert=True, patch_artist=True,
-                          boxprops=dict(facecolor="#9b59b6", alpha=0.6))
+    bp = axes[i].boxplot(
+        s, vert=True, patch_artist=True, boxprops=dict(facecolor="#9b59b6", alpha=0.6)
+    )
     axes[i].set_title(f"Outliers: {col}")
     axes[i].set_ylabel(col)
 
@@ -344,7 +396,7 @@ plt.close()
 # ============================================================================
 # 8. RELACIÓN ENTRE VARIABLES CATEGÓRICAS Y EL TARGET
 # ============================================================================
-print("\n" )
+print("\n")
 print("8. RELACIÓN ENTRE VARIABLES CATEGÓRICAS Y EL TARGET")
 
 
@@ -358,8 +410,9 @@ fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 axes = axes.flatten()
 for i, col in enumerate(CAT_ORDINAL_COLS + CAT_NOMINAL_COLS):
     ct = pd.crosstab(df[col], df[TARGET_COL])
-    ct.plot(kind="bar", stacked=True, ax=axes[i],
-            color=["#3498db", "#e74c3c"], alpha=0.85)
+    ct.plot(
+        kind="bar", stacked=True, ax=axes[i], color=["#3498db", "#e74c3c"], alpha=0.85
+    )
     axes[i].set_title(f"{col} vs {TARGET_COL}")
     axes[i].set_xlabel(col)
     axes[i].set_ylabel("Frecuencia")
@@ -375,7 +428,7 @@ plt.close()
 # ============================================================================
 # 9. DISTRIBUCIÓN DE NUMÉRICAS POR GRUPO (addicted_label)
 # ============================================================================
-print("\n" )
+print("\n")
 print("9. DISTRIBUCIÓN DE NUMÉRICAS POR GRUPO (addicted_label)")
 
 
@@ -392,12 +445,17 @@ axes = axes.flatten()
 for i, col in enumerate(NUM_COLS):
     if i >= len(axes):
         break
-    sns.violinplot(data=df, x=TARGET_COL, y=col, ax=axes[i],
-                   palette=["#3498db", "#e74c3c"], inner="quartile")
+    sns.violinplot(
+        data=df,
+        x=TARGET_COL,
+        y=col,
+        ax=axes[i],
+        palette=["#3498db", "#e74c3c"],
+        inner="quartile",
+    )
     axes[i].set_title(f"{col} por {TARGET_COL}")
 
-plt.suptitle("Distribuciones Numéricas por Grupo de Adicción",
-             fontsize=14, y=1.01)
+plt.suptitle("Distribuciones Numéricas por Grupo de Adicción", fontsize=14, y=1.01)
 plt.tight_layout()
 plt.savefig(os.path.join(IMG_DIR, "08_violines_por_grupo.png"))
 plt.close()
@@ -418,7 +476,9 @@ print(f"  Filas completamente duplicadas:  {n_dup_full:,}")
 total_cells = df.size
 null_total = df.isnull().sum().sum()
 print(f"\n  Total de celdas:            {total_cells:,}")
-print(f"  Celdas con NaN:             {null_total:,} ({null_total/total_cells*100:.2f}%)")
+print(
+    f"  Celdas con NaN:             {null_total:,} ({null_total / total_cells * 100:.2f}%)"
+)
 
 print("\n  Clasificación de variables por calidad:")
 for col in df.columns:
@@ -438,19 +498,26 @@ for col in df.columns:
 # 11. PAIRPLOT DE VARIABLES CLAVE (muestra)
 # ============================================================================
 print("\n  Generamos pairplot ")
-key_vars = ["daily_screen_time_hours", "social_media_hours",
-            "sleep_hours", "stress_level", TARGET_COL]
+key_vars = [
+    "daily_screen_time_hours",
+    "social_media_hours",
+    "sleep_hours",
+    "stress_level",
+    TARGET_COL,
+]
 sample = df[key_vars].sample(min(2000, len(df)), random_state=42)
 sample[TARGET_COL] = sample[TARGET_COL].astype(str)
 
-g = sns.pairplot(sample, hue=TARGET_COL,
-                 palette={"0": "#3498db", "1": "#e74c3c"},
-                 diag_kind="kde", plot_kws={"alpha": 0.3, "s": 12})
-g.figure.suptitle("Pairplot - Variables clave por grupo de adicción",
-                   fontsize=14, y=1.02)
+g = sns.pairplot(
+    sample,
+    hue=TARGET_COL,
+    palette={"0": "#3498db", "1": "#e74c3c"},
+    diag_kind="kde",
+    plot_kws={"alpha": 0.3, "s": 12},
+)
+g.figure.suptitle(
+    "Pairplot - Variables clave por grupo de adicción", fontsize=14, y=1.02
+)
 plt.tight_layout()
 plt.savefig(os.path.join(IMG_DIR, "09_pairplot.png"))
 plt.close()
-
-
-
