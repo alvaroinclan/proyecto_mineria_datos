@@ -1,30 +1,31 @@
-# I. Auditoría y Preprocesamiento - Análisis Exploratorio de Datos (EDA)
+
 
 **Autor:** Álvaro Inclán  
 **Asignatura:** Minería de Datos - Grado en Matemáticas  
 **Dataset:** Smartphone Addiction Prediction Data  
 
 ---
+# I. Preprocesamiento - Análisis Exploratorio de Datos (EDA)
 
-## 1. Descripción del dataset
+## 1.1. Descripción del dataset
 
-### 1.1 Contexto y motivación
+### 1.1.1 Contexto y motivación
 
 La adicción al smartphone es un fenómeno de creciente interés en la investigación y la salud pública. La OMS ha reconocido el uso problemático de dispositivos digitales como factor de riesgo asociado a trastornos del sueño, ansiedad y deterioro del rendimiento académico. En España, el 99,5% de los jóvenes de 16 a 24 años usa el móvil a diario, con un tiempo medio de pantalla superior a 5 horas (INE, 2024).
 
 En este contexto, **predecir y segmentar el riesgo de adicción** a partir de datos comportamentales resulta de gran utilidad para diseñar intervenciones preventivas personalizadas.
 
-### 1.2 Fuente y estructura general
+### 1.1.2 Fuente y estructura general
 
 El dataset *Smartphone Addiction Prediction Data* contiene **7 500 registros** y **16 variables** que recogen patrones de uso del smartphone. Está orientado a **clasificación binaria**, donde `addicted_label` indica si un usuario es adicto (1) o no (0).
 
-### 1.3 Justificación de la elección
+### 1.1.3 Justificación de la elección
 
 - **Relevancia social:** Problema contemporáneo con implicaciones en salud mental y rendimiento académico.
 - **Adecuación al trabajo:** Mezcla de variables numéricas y categóricas, target binario y tamaño moderado (7 500 filas), lo que permite aplicar todas las técnicas requeridas.
-- **Complejidad controlada:** Variables temporales, demográficas y subjetivas que ofrecen un espacio de características rico para explorar relaciones no lineales.
 
-### 1.4 Descripción de las variables
+
+### 1.1.4 Descripción de las variables
 
 | Variable | Tipo | Descripción |
 |----------|------|-------------|
@@ -45,30 +46,30 @@ El dataset *Smartphone Addiction Prediction Data* contiene **7 500 registros** y
 | `addiction_level` | `str` | Mild, Moderate, Severe (819 NaN, 10.9%) |
 | **`addicted_label`** | **`int64`** | **0 (no adicto), 1 (adicto) - Variable objetivo** |
 
-### 1.5 Clasificación de las variables
+### 1.1.5 Clasificación de las variables
 
 | Rol | Variables | Cantidad |
 |-----|-----------|----------|
-| **Identificadores** (excluir) | `transaction_id`, `user_id` | 2 |
+| **Identificadores** | `transaction_id`, `user_id` | 2 |
 | **Predictoras numéricas** | `age`, `daily_screen_time_hours`, `social_media_hours`, `gaming_hours`, `work_study_hours`, `sleep_hours`, `notifications_per_day`, `app_opens_per_day`, `weekend_screen_time` | 9 |
 | **Predictoras categóricas** | `gender`, `stress_level`, `academic_work_impact` | 3 |
-| **Candidata a excluir** (*leakage*) | `addiction_level` | 1 |
+| **Candidata a excluir** | `addiction_level` | 1 |
 | **Variable objetivo** | `addicted_label` | 1 |
 
 ---
 
-## 2. Análisis de valores faltantes
+## 1.2. Análisis de valores faltantes
 
-La auditoría de completitud revela un dataset notablemente limpio. La única variable con valores ausentes es `addiction_level` con **819 NaN (10.92%)**. El resto de variables tiene 0 faltantes. Total de celdas faltantes: 819 de 120 000 (0.68%).
+El análisis de completitud revela un dataset notablemente limpio. La única variable con valores ausentes es `addiction_level` con **819 NaN (10.92%)**. El resto de variables tiene 0 faltantes. El total de celdas faltantes es 819 de 120 000 (0.68%).
 
 ![Mapa de valores faltantes](img/01_mapa_faltantes.png)
 
 !!! note "Observación sobre `addiction_level`"
-    `addiction_level` tiene una relación **determinista** con `addicted_label`: Mild -> label=0, Moderate/Severe -> label=1. Es una recodificación de la variable objetivo, por lo que debe **excluirse** del modelado para evitar *data leakage*. No se requiere imputación.
+    `addiction_level` tiene una relación **determinista** con `addicted_label`: Mild => label=0, Moderate/Severe => label=1. Es una recodificación de la variable objetivo, por lo que debe **excluirse** del modelado para evitar *data leakage*. No se requiere imputación.
 
 ---
 
-## 3. Estadísticos descriptivos
+## 1.3. Estadísticos descriptivos
 
 | Variable | Media | Mediana | Desv. Típica | Mín | Máx | Asimetría | Curtosis |
 |----------|-------|---------|---------------|-----|-----|-----------|----------|
@@ -86,15 +87,15 @@ La auditoría de completitud revela un dataset notablemente limpio. La única va
 
 ---
 
-## 4. Estudio de distribuciones
+## 1.4. Estudio de distribuciones
 
-### 4.1 Variables numéricas
+### 1.4.1 Variables numéricas
 
 ![Distribuciones numéricas](img/02_distribuciones_numericas.png)
 
 Todas las variables numéricas se aproximan a una **distribución uniforme**. El test de Shapiro-Wilk rechaza la normalidad (alfa = 0.05) en todas ellas, con p-valores del orden de 10^-30 a 10^-38. Esto implica que se deberán usar métodos **no paramétricos** o correlación robusta (Spearman) cuando corresponda.
 
-### 4.2 Variables categóricas y variable objetivo
+### 1.4.2 Variables categóricas y variable objetivo
 
 ![Distribuciones categóricas](img/03_distribuciones_categoricas.png)
 
@@ -111,22 +112,22 @@ Todas las variables numéricas se aproximan a una **distribución uniforme**. El
 
 ---
 
-## 5. Análisis de correlaciones
+## 1.5. Análisis de correlaciones
 
 ![Matrices de correlación](img/04_correlaciones.png)
 
 Las correlaciones de Pearson y Spearman son prácticamente idénticas.
 
-### 5.1 Correlaciones significativas (|r| > 0.3)
+### 1.5.1 Correlaciones significativas (|r| > 0.3)
 
 | Par de variables | r (Pearson) | Interpretación |
 |-----------------|-------------|----------------|
-| `daily_screen_time_hours` <-> `weekend_screen_time` | **0.964** | Redundancia casi total |
-| `daily_screen_time_hours` <-> `addicted_label` | **0.577** | Correlación fuerte con el target |
-| `weekend_screen_time` <-> `addicted_label` | **0.555** | Correlación fuerte con el target |
-| `social_media_hours` <-> `addicted_label` | **0.414** | Correlación moderada con el target |
+| `daily_screen_time_hours` - `weekend_screen_time` | **0.964** | Redundancia casi total |
+| `daily_screen_time_hours` - `addicted_label` | **0.577** | Correlación fuerte con el target |
+| `weekend_screen_time` - `addicted_label` | **0.555** | Correlación fuerte con el target |
+| `social_media_hours` - `addicted_label` | **0.414** | Correlación moderada con el target |
 
-### 5.2 Correlaciones con la variable objetivo
+### 1.5.2 Correlaciones con la variable objetivo
 
 ![Scatter plots con target](img/05_scatter_target.png)
 
@@ -145,7 +146,7 @@ Las correlaciones de Pearson y Spearman son prácticamente idénticas.
 
 ---
 
-## 6. Detección de outliers
+## 1.6. Detección de outliers
 
 ![Boxplots de outliers](img/06_outliers_boxplots.png)
 
@@ -153,17 +154,17 @@ El método IQR no detecta **ningún outlier** en ninguna variable numérica. Est
 
 ---
 
-## 7. Relación entre variables categóricas y la variable objetivo
+## 1.7. Relación entre variables categóricas y la variable objetivo
 
 ![Categóricas vs Target](img/07_categoricas_vs_target.png)
 
 Las proporciones de adicción son **prácticamente iguales** en todas las categorías de `stress_level` (~70%), `gender` (~70%) y `academic_work_impact` (70.8% exacto en ambas). Estas variables **no aportan poder discriminante**.
 
-La variable `addiction_level` presenta relación **100% determinista** con el target (Mild -> 0, Moderate/Severe -> 1), confirmando que debe excluirse del modelado.
+La variable `addiction_level` presenta relación **100% determinista** con el target (Mild => 0, Moderate/Severe => 1), confirmando que debe excluirse del modelado.
 
 ---
 
-## 8. Distribuciones por grupo de adicción
+## 1.8. Distribuciones por grupo de adicción
 
 ![Violines por grupo](img/08_violines_por_grupo.png)
 
@@ -177,7 +178,7 @@ El resto de variables (`age`, `gaming_hours`, `work_study_hours`, `sleep_hours`,
 
 ---
 
-## 9. Pairplot de variables clave
+## 1.9. Pairplot de variables clave
 
 ![Pairplot](img/09_pairplot.png)
 
@@ -185,9 +186,9 @@ La separación entre clases se produce principalmente en los ejes de `daily_scre
 
 ---
 
-## 10. Conclusiones del EDA y plan de preprocesamiento
+## 1.10. Conclusiones del EDA y plan de preprocesamiento
 
-### 10.1 Hallazgos principales
+### 1.10.1 Hallazgos principales
 
 1. **Dataset limpio:** Solo `addiction_level` tiene faltantes (10.9%). Sin outliers, duplicados ni inconsistencias.
 2. **Distribuciones uniformes y sintéticas:** Curtosis ~= -1.2, distribuciones no normales.
@@ -196,7 +197,7 @@ La separación entre clases se produce principalmente en los ejes de `daily_scre
 5. **Categóricas no informativas:** `stress_level`, `gender` y `academic_work_impact` no discriminan.
 6. **Desbalance moderado** en el target: 70.8% / 29.2%.
 
-### 10.2 Plan de preprocesamiento
+### 1.10.2 Plan de preprocesamiento
 
 | Paso | Acción | Justificación |
 |------|--------|---------------|
@@ -210,9 +211,9 @@ La separación entre clases se produce principalmente en los ejes de `daily_scre
 
 ---
 
-## 11. Tratamiento de valores faltantes
+## 1.11. Tratamiento de valores faltantes
 
-### 11.1 Localización y diagnóstico
+### 1.11.1 Localización y diagnóstico
 
 El **100% de las filas con NaN** en `addiction_level` pertenecen al grupo no adicto (`addicted_label = 0`). Para determinar el mecanismo de pérdida se realizaron:
 
@@ -221,7 +222,7 @@ El **100% de las filas con NaN** en `addiction_level` pertenecen al grupo no adi
 
 ![Distribuciones NaN vs OK](img/10_distribucion_nan_vs_ok.png)
 
-### 11.2 Relación determinista y decisión
+### 1.11.2 Relación determinista y decisión
 
 La tabla cruzada confirma correspondencia **100% determinista** entre `addiction_level` y `addicted_label`:
 
@@ -242,9 +243,9 @@ La tabla cruzada confirma correspondencia **100% determinista** entre `addiction
 
 ---
 
-## 12. Ingeniería de características y selección de variables
+## 1.12. Ingeniería de características y selección de variables
 
-### 12.1 Preparación previa
+### 1.12.1 Preparación previa
 
 **Variables eliminadas:** `transaction_id`, `user_id` (IDs), `addiction_level` (leakage), `weekend_screen_time` (colinealidad).
 
@@ -258,11 +259,11 @@ La tabla cruzada confirma correspondencia **100% determinista** entre `addiction
 
 Tras estas transformaciones: **12 variables** numéricas candidatas.
 
-### 12.2 Método: Stepwise Forward con AIC
+### 1.12.2 Método: Stepwise Forward con AIC
 
 Se utiliza el criterio de información de Akaike (AIC = 2k - 2ln(L)) con regresión logística. En cada paso se añade la variable que más reduce el AIC, deteniéndose cuando ninguna mejora el criterio.
 
-### 12.3 Resultados del Stepwise Forward
+### 1.12.3 Resultados del Stepwise Forward
 
 | Paso | Variable añadida | AIC |
 |------|-----------------|-----|
@@ -270,11 +271,11 @@ Se utiliza el criterio de información de Akaike (AIC = 2k - 2ln(L)) con regresi
 | 1 | `daily_screen_time_hours` | 6 127.82 |
 | 2 | `social_media_hours` | 3 692.61 |
 | 3 | `sleep_hours` | 3 687.77 |
-| 4 | *ninguna mejora* -> STOP | - |
+| 4 | *ninguna mejora* => STOP | - |
 
 ![Evolución del AIC](img/13_evolucion_aic.png)
 
-### 12.4 Variables seleccionadas (3) y modelo final
+### 1.12.4 Variables seleccionadas (3) y modelo final
 
 | Variable | Coeficiente (Logit) | p-valor | Interpretación |
 |----------|--------------------:|--------:|----------------|
@@ -288,7 +289,7 @@ Las 9 variables restantes (`age`, `gaming_hours`, `work_study_hours`, `notificat
 
 **Métricas del modelo logístico final:** Pseudo R^2 (McFadden) = 0.594, AIC = 3 687.77, todas las variables significativas al nivel alfa = 0.01.
 
-### 12.5 Correlaciones del dataset final
+### 1.12.5 Correlaciones del dataset final
 
 ![Correlaciones finales](img/14_correlaciones_final.png)
 
@@ -296,7 +297,7 @@ Las tres variables seleccionadas presentan baja correlación entre sí, confirma
 
 ---
 
-## 13. Dataset final exportado
+## 1.13. Dataset final exportado
 
 El dataset limpio se ha guardado en `data/data_clean.csv`:
 
@@ -311,7 +312,7 @@ El dataset limpio se ha guardado en `data/data_clean.csv`:
 
 ---
 
-## 14. Validación mediante tests automatizados
+## 1.14. Validación mediante tests automatizados
 
 Se han desarrollado tres suites de tests con pytest para garantizar la reproducibilidad:
 
@@ -325,15 +326,15 @@ Se han desarrollado tres suites de tests con pytest para garantizar la reproduci
 uv run pytest tests/ -v
 ```
 
-Todos los tests pasan correctamente y actúan como guardia de regresión para futuras fases del proyecto.
+
 
 ---
 
 # II. Modelización Supervisada y Contraste
 
-## 15. Estrategia de modelización
+## 2.1. Estrategia de modelización
 
-### 15.1 Objetivo
+### 2.1.1 Objetivo
 
 Contrastar modelos de **tres naturalezas distintas** para predecir la adicción al smartphone (`addicted_label`), según los requisitos del enunciado:
 
@@ -343,7 +344,7 @@ Contrastar modelos de **tres naturalezas distintas** para predecir la adicción 
 | **Modelo flexible** | SVM con kernel RBF | Captura relaciones no lineales en el espacio de características |
 | **Ensemble (agregación)** | Random Forest | Método de bagging que reduce varianza y mejora robustez |
 
-### 15.2 Protocolo experimental
+### 2.1.2 Pipeline
 
 - **División Train/Test:** 80/20 estratificado (semilla 42)
 - **Validación cruzada:** StratifiedKFold con 5 folds para ajuste de hiperparámetros
@@ -351,7 +352,7 @@ Contrastar modelos de **tres naturalezas distintas** para predecir la adicción 
 - **Estandarización:** StandardScaler ajustado solo en train (evita data leakage)
 - **Métricas de evaluación:** Accuracy, Precision, Recall, F1-Score, AUC-ROC
 
-### 15.3 División de datos
+### 2.1.3 División de datos
 
 | Conjunto | Observaciones | % Positivos |
 |----------|---------------|-------------|
@@ -362,13 +363,13 @@ La estratificación garantiza que ambos conjuntos mantienen la misma proporción
 
 ---
 
-## 16. Modelo 1: Regresión Logística (Baseline)
+## 2.2. Modelo 1: Regresión Logística (Baseline)
 
-### 16.1 Justificación
+### 2.2.1 Justificación
 
 La regresión logística es el baseline natural para clasificación binaria. Como modelo lineal generalizado (GLM), proporciona coeficientes interpretables y una referencia contra la que medir modelos más complejos.
 
-### 16.2 Ajuste de hiperparámetros
+### 2.2.2 Ajuste de hiperparámetros
 
 | Hiperparámetro | Valores explorados | Mejor valor |
 |---------------|--------------------|-------------|
@@ -379,16 +380,16 @@ La regresión logística es el baseline natural para clasificación binaria. Com
 
 El valor óptimo de `C = 0.1` indica que se beneficia de una regularización moderada, penalizando coeficientes excesivamente grandes.
 
-### 16.3 Coeficientes del modelo
+### 2.2.3 Coeficientes del modelo
 
 | Variable | Coeficiente (estandarizado) | Interpretación |
 |----------|----------------------------:|----------------|
-| `daily_screen_time_hours` | +2.794 | Mayor tiempo de pantalla -> mayor riesgo |
-| `social_media_hours` | +2.064 | Mayor uso de RRSS -> mayor riesgo |
+| `daily_screen_time_hours` | +2.794 | Mayor tiempo de pantalla => mayor riesgo |
+| `social_media_hours` | +2.064 | Mayor uso de RRSS => mayor riesgo |
 | `sleep_hours` | +0.108 | Efecto positivo débil pero significativo |
 | *(intercepto)* | +2.278 | Sesgo base hacia la clase positiva |
 
-### 16.4 Resultados
+### 2.2.4 Resultados
 
 | Métrica | Valor |
 |---------|-------|
@@ -403,13 +404,13 @@ El valor óptimo de `C = 0.1` indica que se beneficia de una regularización mod
 
 ---
 
-## 17. Modelo 2: SVM con kernel RBF (Modelo Flexible)
+## 2.3. Modelo 2: SVM con kernel RBF (Modelo Flexible)
 
-### 17.1 Justificación
+### 2.3.1 Justificación
 
 El SVM con kernel gaussiano (RBF) proyecta los datos a un espacio de alta dimensionalidad donde las clases pueden ser separadas por un hiperplano. Permite capturar **relaciones no lineales** sin asumir una forma funcional concreta.
 
-### 17.2 Ajuste de hiperparámetros
+### 2.3.2 Ajuste de hiperparámetros
 
 | Hiperparámetro | Valores explorados | Mejor valor |
 |---------------|--------------------|-------------|
@@ -419,7 +420,7 @@ El SVM con kernel gaussiano (RBF) proyecta los datos a un espacio de alta dimens
 
 Un valor alto de `C = 100` y `gamma = 1` indica que el modelo explota fronteras de decisión complejas y localizadas, adaptándose finamente a la estructura de los datos.
 
-### 17.3 Resultados
+### 2.3.3 Resultados
 
 | Métrica | Valor |
 |---------|-------|
@@ -436,13 +437,13 @@ Un valor alto de `C = 100` y `gamma = 1` indica que el modelo explota fronteras 
 
 ---
 
-## 18. Modelo 3: Random Forest (Ensemble)
+## 2.4. Modelo 3: Random Forest (Ensemble)
 
-### 18.1 Justificación
+### 2.4.1 Justificación
 
 Random Forest es un método de agregación (*bagging*) que combina múltiples árboles de decisión entrenados sobre submuestras aleatorias. Reduce la varianza sin aumentar significativamente el sesgo, y proporciona una medida natural de importancia de variables.
 
-### 18.2 Ajuste de hiperparámetros
+### 2.4.2 Ajuste de hiperparámetros
 
 | Hiperparámetro | Valores explorados | Mejor valor |
 |---------------|--------------------|-------------|
@@ -453,7 +454,7 @@ Random Forest es un método de agregación (*bagging*) que combina múltiples á
 
 La profundidad ilimitada (`max_depth=None`) y `min_samples_split=2` indican que los árboles se desarrollan completamente. El modelo con solo 100 árboles ya converge.
 
-### 18.3 Importancia de variables (Gini)
+### 2.4.3 Importancia de variables (Gini)
 
 | Variable | Importancia | Interpretación |
 |----------|------------:|----------------|
@@ -461,7 +462,7 @@ La profundidad ilimitada (`max_depth=None`) y `min_samples_split=2` indican que 
 | `social_media_hours` | **0.382** | Segunda en importancia |
 | `sleep_hours` | 0.062 | Contribución marginal |
 
-### 18.4 Resultados
+### 2.4.4 Resultados
 
 | Métrica | Valor |
 |---------|-------|
@@ -475,9 +476,9 @@ La profundidad ilimitada (`max_depth=None`) y `min_samples_split=2` indican que 
 
 ---
 
-## 19. Comparativa de modelos
+## 2.5. Comparativa de modelos
 
-### 19.1 Tabla resumen de métricas en Test
+### 2.5.1 Tabla resumen de métricas en Test
 
 | Modelo | Accuracy | Precision | Recall | F1-Score | AUC-ROC |
 |--------|:--------:|:---------:|:------:|:--------:|:-------:|
@@ -487,17 +488,17 @@ La profundidad ilimitada (`max_depth=None`) y `min_samples_split=2` indican que 
 
 ![Comparativa de métricas](img/17_comparativa_metricas.png)
 
-### 19.2 Curvas ROC
+### 2.5.2 Curvas ROC
 
 ![Curvas ROC](img/15_curvas_roc.png)
 
 Las tres curvas muestran un excelente poder discriminante. Random Forest y SVM presentan curvas prácticamente superpuestas, ambas claramente superiores al baseline logístico.
 
-### 19.3 Matrices de confusión
+### 2.5.3 Matrices de confusión
 
 ![Matrices de confusión](img/16_matrices_confusion.png)
 
-### 19.4 Distribución de probabilidades predichas
+### 2.5.4 Distribución de probabilidades predichas
 
 ![Distribución de probabilidades](img/21_distribucion_probabilidades.png)
 
@@ -505,9 +506,9 @@ Los modelos flexibles (SVM y RF) producen distribuciones más separadas entre cl
 
 ---
 
-## 20. Análisis del compromiso sesgo-varianza
+## 2.6. Análisis del compromiso sesgo-varianza
 
-### 20.1 Métricas de Train vs Validación (AUC-ROC)
+### 2.6.1 Métricas de Train vs Validación (AUC-ROC)
 
 | Modelo | CV Train | CV Validación | Gap | Diagnóstico |
 |--------|:--------:|:-------------:|:---:|-------------|
@@ -517,7 +518,7 @@ Los modelos flexibles (SVM y RF) producen distribuciones más separadas entre cl
 
 ![Sesgo-Varianza](img/20_sesgo_varianza.png)
 
-### 20.2 Learning curves
+### 2.6.2 Learning curves
 
 ![Learning Curves](img/19_learning_curves.png)
 
@@ -532,15 +533,15 @@ Los modelos flexibles (SVM y RF) producen distribuciones más separadas entre cl
 
 ---
 
-## 21. Conclusiones de la modelización
+## 2.7. Conclusiones de la modelización
 
-### 21.1 Ranking de modelos
+### 2.7.1 Ranking de modelos
 
 1. **Random Forest** (AUC = 0.989) - Mejor rendimiento global con gap sesgo-varianza controlado.
 2. **SVM (RBF)** (AUC = 0.985) - Rendimiento muy similar al RF con mejor equilibrio sesgo-varianza.
 3. **Regresión Logística** (AUC = 0.954) - Baseline sólido pero limitado por su linealidad.
 
-### 21.2 Hallazgos clave
+Aspectos a destacar:
 
 - La **mejora del baseline a los modelos flexibles** (+3.5 puntos AUC) confirma la existencia de relaciones no lineales en los datos, aunque la mayor parte de la estructura es capturada linealmente.
 - Las dos variables más importantes (`daily_screen_time_hours` y `social_media_hours`) dominan las predicciones en todos los modelos, con `sleep_hours` aportando información complementaria marginal.
@@ -551,13 +552,13 @@ Los modelos flexibles (SVM y RF) producen distribuciones más separadas entre cl
 
 # III. Aprendizaje No Supervisado
 
-## 22. Clustering Jerárquico Aglomerativo
+## 3.1. Clustering Jerárquico Aglomerativo
 
-### 22.1 Objetivo
+### 3.1.1 Objetivo
 
 Identificar **estructuras naturales** en los datos sin utilizar las etiquetas de adicción, analizar los perfiles de los clusters obtenidos e interpretar qué patrones de comportamiento subyacen en los datos.
 
-### 22.2 Metodología
+### 3.1.2 Metodología
 
 - **Algoritmo:** Clustering Jerárquico Aglomerativo
 - **Método de enlace:** Ward (minimiza la varianza intra-cluster)
@@ -565,7 +566,7 @@ Identificar **estructuras naturales** en los datos sin utilizar las etiquetas de
 - **Estandarización:** StandardScaler (necesario para que todas las variables contribuyan equitativamente)
 - **Selección de k:** Silhouette Score para k = 2, ..., 6
 
-### 22.3 Dendrogramas
+### 3.1.3 Dendrogramas
 
 Se comparan tres métodos de enlace (Ward, Complete, Average) sobre una submuestra de 1 500 observaciones:
 
@@ -575,9 +576,9 @@ El método **Ward** produce las fusiones más equilibradas y compactas. Los tres
 
 ---
 
-## 23. Selección del número de clusters
+## 3.2. Selección del número de clusters
 
-### 23.1 Silhouette Score por k
+### 3.2.1 Silhouette Score por k
 
 | k | Silhouette Score |
 |:-:|:----------------:|
@@ -589,15 +590,15 @@ El método **Ward** produce las fusiones más equilibradas y compactas. Los tres
 
 ![Silhouette por k](img/23_silhouette_por_k.png)
 
-### 23.2 Decisión
+### 3.2.2 Decisión
 
 Los valores de Silhouette son bajos (todos < 0.21), lo que indica que los datos no forman clusters bien separados, consistente con las distribuciones uniformes detectadas en el EDA. Se selecciona **k = 6** por ser el valor que maximiza el Silhouette Score (0.2071).
 
 ---
 
-## 24. Perfilado de clusters
+## 3.3. Perfilado de clusters
 
-### 24.1 Distribución
+### 3.3.1 Distribución
 
 | Cluster | Observaciones | Porcentaje |
 |:-------:|:-------------:|:----------:|
@@ -610,7 +611,7 @@ Los valores de Silhouette son bajos (todos < 0.21), lo que indica que los datos 
 
 Los clusters 2 y 3 son los más grandes (~25% cada uno), mientras que los clusters 0 y 4 son los más pequeños (~10%).
 
-### 24.2 Medias por cluster
+### 3.3.2 Medias por cluster
 
 | Cluster | `daily_screen_time_hours` | `social_media_hours` | `sleep_hours` |
 |:-------:|:-------------------------:|:--------------------:|:-------------:|
@@ -626,7 +627,7 @@ En negrita los valores notablemente por encima/debajo de la media global.
 
 ![Perfiles de clusters](img/24_perfiles_clusters.png)
 
-### 24.3 Interpretación de los perfiles
+### 3.3.3 Interpretación de los perfiles
 
 | Cluster | Perfil | Descripción |
 |:-------:|--------|-------------|
@@ -641,9 +642,9 @@ En negrita los valores notablemente por encima/debajo de la media global.
 
 ---
 
-## 25. Análisis detallado y visualización
+## 3.4. Análisis detallado y visualización
 
-### 25.1 Silhouette por cluster
+### 3.4.1 Silhouette por cluster
 
 | Cluster | Silhouette medio | Calidad |
 |:-------:|:----------------:|---------|
@@ -659,7 +660,7 @@ Los clusters 0 y 4 (los más pequeños y diferenciados por alto uso de RRSS) tie
 
 ![Diagrama de Silueta](img/27_diagrama_silueta.png)
 
-### 25.2 Visualización 2D
+### 3.4.2 Visualización 2D
 
 ![Scatter clusters](img/26_scatter_clusters.png)
 
@@ -667,7 +668,7 @@ La visualización muestra que los clusters se organizan como una partición del 
 
 ---
 
-## 26. Conclusiones del aprendizaje no supervisado
+## 3.5. Conclusiones del aprendizaje no supervisado
 
 1. **Se identifican 6 perfiles de uso del smartphone** con el clustering jerárquico (Ward, k = 6). Aunque los Silhouette son bajos (0.21), los clusters revelan patrones interpretables.
 
@@ -676,4 +677,141 @@ La visualización muestra que los clusters se organizan como una partición del 
 3. **Perfiles extremos:** El Cluster 3 (máximo uso, buen sueño) y el Cluster 5 (mínimo uso, máximo sueño) representan los dos extremos del espectro. El Cluster 0 (alto uso + alto RRSS + poco sueño) es el perfil de mayor riesgo potencial.
 
 4. **Limitación:** Los valores bajos de Silhouette reflejan la naturaleza uniforme y sintética del dataset, donde las fronteras entre grupos son graduales en lugar de abruptas. En datos reales, se esperaría una estructura de clusters más marcada.
+
+---
+
+# IV. Interpretación y Conclusiones
+
+## 4.1. Diagnóstico del modelo lineal: Análisis de residuos
+
+### 4.1.1 Modelo analizado
+
+Se utiliza la Regresión Logística (ajustada con statsmodels para obtener diagnósticos completos) sobre el conjunto de test (1 500 observaciones). El modelo tiene un Pseudo R^2 (McFadden) = 0.594, lo que indica un buen ajuste.
+
+### 4.1.2 Residuos de devianza
+
+| Estadístico | Valor |
+|-------------|:-----:|
+| Media | 0.0148 |
+| Desviación típica | 0.6993 |
+| Mínimo | -2.7657 |
+| Máximo | 2.4575 |
+
+La media cercana a cero indica ausencia de sesgo sistemático. La desviación típica inferior a 1 es coherente con un modelo que ajusta bien (en un modelo perfecto los residuos de devianza tendrían desviación unitaria).
+
+### 4.1.3 Residuos de Pearson
+
+| Estadístico | Valor |
+|-------------|:-----:|
+| Media | -0.0246 |
+| Desviación típica | 0.7812 |
+| Mínimo | -6.6942 |
+| Máximo | 4.4142 |
+
+Los residuos de Pearson muestran colas más largas que los de devianza, con valores extremos de hasta 6.7 en valor absoluto. Esto es esperable en regresión logística cuando las probabilidades predichas están cerca de 0 o 1.
+
+### 4.1.4 Gráficos de diagnóstico
+
+![Diagnóstico de residuos](img/28_residuos_logistica.png)
+
+**Interpretación de cada panel:**
+
+- **Residuos de devianza vs prob. predicha:** Se observan dos bandas (una para y=0 y otra para y=1), patrón típico y esperado en regresión logística con respuesta binaria. No se detectan patrones anómalos.
+- **Residuos de Pearson vs predictor lineal:** La dispersión es mayor en la zona central del predictor lineal, donde la incertidumbre es máxima.
+- **Q-Q Plot:** Los residuos se desvían de la normal en las colas, lo cual es normal en modelos logísticos (la distribución teórica no es normal sino chi-cuadrado).
+- **Histograma:** La distribución de residuos es bimodal (dos picos correspondientes a las dos clases), comportamiento esperado en clasificación binaria.
+
+### 4.1.5 Test de Hosmer-Lemeshow
+
+| Parámetro | Valor |
+|-----------|:-----:|
+| Estadístico Chi^2 | 5.359 |
+| Grados de libertad | 8 |
+| p-valor | **0.7186** |
+| Decisión | No se rechaza H0 |
+
+![Test de Hosmer-Lemeshow](img/29_hosmer_lemeshow.png)
+
+El p-valor de 0.72 (muy superior a 0.05) indica que **no hay evidencia de falta de ajuste**: las frecuencias observadas y esperadas son consistentes en todos los deciles de probabilidad. El modelo logístico ajusta adecuadamente los datos.
+
+---
+
+## 4.2. Importancia de variables en modelos de caja negra
+
+### 4.2.1 Importancia Gini (Random Forest)
+
+| Variable | Importancia Gini | Interpretación |
+|----------|:----------------:|----------------|
+| `daily_screen_time_hours` | **0.556** | Variable dominante (56% de la importancia) |
+| `social_media_hours` | **0.382** | Segunda variable (38%) |
+| `sleep_hours` | 0.062 | Contribución marginal (6%) |
+
+La importancia Gini mide cuánto contribuye cada variable a la reducción de la impureza en las divisiones de los árboles.
+
+### 4.2.2 Permutation Importance (model-agnostic)
+
+Se calcula la caída en AUC-ROC al permutar cada variable (30 repeticiones), lo que mide la dependencia real del modelo en cada variable:
+
+| Variable | Reg. Logística | SVM (RBF) | Random Forest |
+|----------|:--------------:|:---------:|:-------------:|
+| `daily_screen_time_hours` | 0.306 (+/-0.015) | **0.368 (+/-0.016)** | 0.342 (+/-0.014) |
+| `social_media_hours` | 0.154 (+/-0.008) | **0.302 (+/-0.015)** | 0.247 (+/-0.012) |
+| `sleep_hours` | 0.000 (+/-0.000) | -0.001 (+/-0.001) | 0.000 (+/-0.001) |
+
+![Permutation Importance](img/30_permutation_importance.png)
+
+> [!NOTE]
+> `sleep_hours` tiene importancia de permutación esencialmente **nula** en los tres modelos. Su selección por el stepwise forward (AIC) se debió a una mejora estadísticamente significativa pero prácticamente irrelevante.
+
+### 4.2.3 Comparativa Gini vs Permutation (Random Forest)
+
+![Gini vs Permutation](img/31_gini_vs_permutation.png)
+
+Ambos métodos coinciden en el ranking de las variables: `daily_screen_time_hours` más importante que `social_media_hours` y ambas mucho más importantes que `sleep_hours`. La importancia Gini sobreestima ligeramente la contribución de `sleep_hours` (0.062 vs 0.000 en permutación) porque mide uso en las divisiones, no impacto real en la predicción.
+
+Los tres modelos coinciden en que `daily_screen_time_hours` es la variable **más importante** en todos los modelos, `social_media_hours` es la **segunda** en importancia con mayor peso relativo en SVM
+y `sleep_hours` no aporta capacidad predictiva real
+
+---
+
+## 4.3. Interpretación del modelo logístico: Odds Ratios
+
+| Variable | Odds Ratio | IC 95% | Interpretación |
+|----------|:----------:|:------:|----------------|
+| `daily_screen_time_hours` | **21.97** | [18.37, 26.29] | Por cada desv. típica de aumento, la odds de adicción se multiplica por 22 |
+| `social_media_hours` | **9.83** | [8.50, 11.37] | Por cada desv. típica de aumento, la odds se multiplica por 10 |
+| `sleep_hours` | 1.12 | [1.02, 1.23] | Efecto marginal: la odds aumenta un 12% |
+
+![Odds Ratios](img/32_odds_ratios.png)
+
+> [!IMPORTANT]
+> Los odds ratios están calculados sobre variables **estandarizadas**, por lo que representan el efecto de un cambio de una desviación típica. El efecto de `daily_screen_time_hours` (OR = 22) es el más fuerte con diferencia.
+
+---
+
+## 4.4. Análisis crítico: limitaciones y sobreajuste
+
+### 4.4.1 Sobreajuste
+
+| Modelo | Gap Train-Valid | Diagnóstico |
+|--------|:--------------:|-------------|
+| Regresión Logística | 0.000 | Sin sobreajuste (modelo demasiado simple para sobreajustar) |
+| SVM (RBF) | 0.005 | Sin sobreajuste relevante |
+| Random Forest | 0.010 | Gap mínimo, controlado por el bagging |
+
+Ningún modelo presenta sobreajuste problemático, confirmado por las learning curves de la Parte II.
+
+### 4.4.2 Limitaciones identificadas
+
+1. **Dataset sintético:** Las distribuciones uniformes y la ausencia total de outliers sugieren datos generados artificialmente, lo que limita la generalización a contextos reales.
+
+2. **Pocas variables predictivas:** Solo 3 de las 12 variables originales resultaron informativas tras el stepwise, y de esas, `sleep_hours` es prácticamente irrelevante. El modelo depende esencialmente de 2 variables.
+
+3. **Relación determinista parcial:** Los altos valores de AUC (0.95-0.99) sugieren que la variable objetivo fue generada como función de las predictoras, lo que explicaría la ausencia de ruido y la fácil separabilidad.
+
+4. **Frontera de decisión:** La diferencia entre modelos lineales (AUC=0.954) y no lineales (AUC=0.989) indica que existe una componente no lineal en la frontera, pero la mayor parte de la estructura es capturada linealmente.
+
+5. **Desbalance de clases:** Aunque el ratio 2.42:1 no requirió tratamiento especial aquí, en datos reales podría ser más extremo y necesitar técnicas de resampling.
+
+6. **Modelo final:** En caso de elegir un modelo, optaría por el Random Forest por su mayor rendimiento predictivo pero como hemos visto debido a la base de datos no tenemos resultados válidos. Si analizamos la gráfica de la importancia de variables podemos ver que el modelo no es capaz de aprender la relación entre variables y la clase objetivo.
 
