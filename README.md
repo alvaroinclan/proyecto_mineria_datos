@@ -51,7 +51,7 @@ Data is not included in the repository. To download Kaggle
   ```
   proyecto_mineria_datos/
   ├── .github/workflows/   # CI/CD pipelines
-  ├── data/                # Data files (not committed — see .gitignore)
+  ├── data/                # Data files 
   ├── docs/                # MkDocs documentation sources
   ├── src/                 # Source package
   ├── tests/               # Unit and integration tests
